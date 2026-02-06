@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iota — Free mobile UI/UX design in your browser</title>
+    <link rel="stylesheet" href="/chillax.css">
+    <link rel="stylesheet" href="style.css">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to main content</a>
+
+<nav>
+    <div class="nav-container">
+        <div class="logo">
+            <i data-lucide="layers" class="logo-icon"></i>
+            iota
+        </div>
+        <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+            <i data-lucide="menu"></i>
+        </button>
+        <ul class="nav-links">
+            <li><a href="#product"><i data-lucide="edit-3"></i> Editor</a></li>
+            <li><a href="#use-cases"><i data-lucide="lightbulb"></i> What?</a></li>
+            <li><a href="#resources"><i data-lucide="book-open"></i> Learn</a></li>
+            <li><a href="#pricing"><i data-lucide="heart"></i> Free</a></li>
+            <li><a href="#" class="btn-primary">
+                <i data-lucide="play-circle"></i>
+                Open editor
+            </a></li>
+        </ul>
+    </div>
+</nav>
+
+<main id="main">
+
+<section class="hero">
+    <div class="hero-badge">
+        <i data-lucide="sparkles"></i>
+        100% Free & Browser-based
+    </div>
+    <h1>Design mobile apps directly in your browser</h1>
+    <p>
+        iota is a <strong>free, mobile-first UI/UX design tool</strong> that runs entirely online.<br>
+        Wireframe, prototype, and design screens from your phone — no downloads.
+    </p>
+    <div class="hero-cta">
+        <a href="#" class="btn-primary btn-large">
+            <i data-lucide="rocket"></i>
+            Start designing free
+        </a>
+        <a href="#" class="btn-secondary btn-large">
+            <i data-lucide="play"></i>
+            Watch demo
+        </a>
+    </div>
+</section>
+
+<div class="carousel">
+    <div class="carousel-inner">
+        
+        <div class="carousel-slide testimonial slide-purple">
+            <img src="https://images.unsplash.com/photo-1502685104226-ee32379fefbe?auto=format&fit=crop&w=300&q=80" class="avatar" alt="Samuel">
+            <p class="quote">I designed my first full mobile app UI on my phone. iota feels unreal.</p>
+            <span class="author">— Samuel, Product Designer</span>
+        </div>
+        
+        <div class="carousel-slide testimonial slide-blue">
+            <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=300&q=80" class="avatar" alt="Aisha">
+            <p class="quote">No laptop, no installs. Just ideas turning into screens.</p>
+            <span class="author">— Aisha, Startup Founder</span>
+        </div>
+        
+        <div class="carousel-slide testimonial slide-green">
+            <img src="https://images.unsplash.com/photo-1527980965255-d3b416303d12?auto=format&fit=crop&w=300&q=80" class="avatar" alt="Daniel">
+            <p class="quote">The touch editor feels native. Like it was made for mobile first.</p>
+            <span class="author">— Daniel, UX Researcher</span>
+        </div>
+        
+        <div class="carousel-slide testimonial slide-orange">
+            <img src="https://images.unsplash.com/photo-1547425260-76bcadfb4f2c?auto=format&fit=crop&w=300&q=80" class="avatar" alt="Clara">
+            <p class="quote">I preview designs on real screen sizes instantly. That sold me.</p>
+            <span class="author">— Clara, UI Freelancer</span>
+        </div>
+        
+        <div class="carousel-slide testimonial slide-pink">
+            <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=300&q=80" class="avatar" alt="Leo">
+            <p class="quote">Collaborating in real-time from different phones just works.</p>
+            <span class="author">— Leo, Remote Team Lead</span>
+        </div>
+        
+        <div class="carousel-slide testimonial slide-teal">
+            <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=300&q=80" class="avatar" alt="Mercy">
+            <p class="quote">Even on slow internet, iota stays smooth.</p>
+            <span class="author">— Mercy, Student Designer</span>
+        </div>
+        
+        <div class="carousel-slide testimonial slide-indigo">
+            <img src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?auto=format&fit=crop&w=300&q=80" class="avatar" alt="Kevin">
+            <p class="quote">Free to start. Powerful enough to stay.</p>
+            <span class="author">— Kevin, Indie Maker</span>
+        </div>
+        
+        <div class="carousel-slide testimonial slide-rose">
+            <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=300&q=80" class="avatar" alt="Zainab">
+            <p class="quote">This is what modern design tools should feel like.</p>
+            <span class="author">— Zainab, Visual Designer</span>
+        </div>
+        
+    </div>
+    
+    <div class="carousel-indicators">
+        <span class="indicator active" onclick="goToSlide(0)" aria-label="Slide 1"></span>
+        <span class="indicator" onclick="goToSlide(1)" aria-label="Slide 2"></span>
+        <span class="indicator" onclick="goToSlide(2)" aria-label="Slide 3"></span>
+        <span class="indicator" onclick="goToSlide(3)" aria-label="Slide 4"></span>
+        <span class="indicator" onclick="goToSlide(4)" aria-label="Slide 5"></span>
+        <span class="indicator" onclick="goToSlide(5)" aria-label="Slide 6"></span>
+        <span class="indicator" onclick="goToSlide(6)" aria-label="Slide 7"></span>
+        <span class="indicator" onclick="goToSlide(7)" aria-label="Slide 8"></span>
+    </div>
+</div>
+
+<section class="trusted">
+    <h3><i data-lucide="check-circle"></i> Used by mobile designers, students & indie builders</h3>
+    <div class="stats-grid">
+        <div class="stat-card">
+            <i data-lucide="users" class="stat-icon"></i>
+            <div class="stat-number">50K+</div>
+            <div class="stat-label">Active Users</div>
+        </div>
+        <div class="stat-card">
+            <i data-lucide="smartphone" class="stat-icon"></i>
+            <div class="stat-number">200K+</div>
+            <div class="stat-label">Designs Created</div>
+        </div>
+        <div class="stat-card">
+            <i data-lucide="globe" class="stat-icon"></i>
+            <div class="stat-number">120+</div>
+            <div class="stat-label">Countries</div>
+        </div>
+        <div class="stat-card">
+            <i data-lucide="heart" class="stat-icon"></i>
+            <div class="stat-number">100%</div>
+            <div class="stat-label">Free Forever</div>
+        </div>
+    </div>
+</section>
+
+<section class="workflow" id="product">
+    <h2>From idea to mobile UI — all inside your browser</h2>
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab(0)">
+            <i data-lucide="brain"></i> Think
+        </button>
+        <button class="tab-btn" onclick="switchTab(1)">
+            <i data-lucide="box"></i> Wireframe
+        </button>
+        <button class="tab-btn" onclick="switchTab(2)">
+            <i data-lucide="palette"></i> Design
+        </button>
+        <button class="tab-btn" onclick="switchTab(3)">
+            <i data-lucide="move"></i> Prototype
+        </button>
+        <button class="tab-btn" onclick="switchTab(4)">
+            <i data-lucide="flask-conical"></i> Test
+        </button>
+        <button class="tab-btn" onclick="switchTab(5)">
+            <i data-lucide="share-2"></i> Share
+        </button>
+        <button class="tab-btn" onclick="switchTab(6)">
+            <i data-lucide="users-2"></i> Collaborate
+        </button>
+        <button class="tab-btn" onclick="switchTab(7)">
+            <i data-lucide="package"></i> Export
+        </button>
+    </div>
+
+    <div class="tab-content">
+        <div class="tab-pane active">
+            <div class="tab-icon-large">
+                <i data-lucide="brain"></i>
+            </div>
+            <h3>Start with an idea.</h3>
+            <p>Quickly sketch app concepts and UX flows using touch-friendly tools.</p>
+            <ul class="feature-list">
+                <li><i data-lucide="check"></i> Mind mapping tools</li>
+                <li><i data-lucide="check"></i> Sticky notes & boards</li>
+                <li><i data-lucide="check"></i> Flow diagrams</li>
+            </ul>
+        </div>
+        <div class="tab-pane">
+            <div class="tab-icon-large">
+                <i data-lucide="box"></i>
+            </div>
+            <h3>Create mobile wireframes.</h3>
+            <p>Low-fidelity wireframes optimized for small screens and thumbs.</p>
+            <ul class="feature-list">
+                <li><i data-lucide="check"></i> Pre-built components</li>
+                <li><i data-lucide="check"></i> Responsive grids</li>
+                <li><i data-lucide="check"></i> Quick mockups</li>
+            </ul>
+        </div>
+        <div class="tab-pane">
+            <div class="tab-icon-large">
+                <i data-lucide="palette"></i>
+            </div>
+            <h3>Design UI visually.</h3>
+            <p>Buttons, inputs, cards, layouts — built for mobile apps.</p>
+            <ul class="feature-list">
+                <li><i data-lucide="check"></i> Component library</li>
+                <li><i data-lucide="check"></i> Color & typography tools</li>
+                <li><i data-lucide="check"></i> Icon integration</li>
+            </ul>
+        </div>
+        <div class="tab-pane">
+            <div class="tab-icon-large">
+                <i data-lucide="move"></i>
+            </div>
+            <h3>Prototype interactions.</h3>
+            <p>Tap, swipe, scroll, and flow between screens.</p>
+            <ul class="feature-list">
+                <li><i data-lucide="check"></i> Interactive hotspots</li>
+                <li><i data-lucide="check"></i> Gesture animations</li>
+                <li><i data-lucide="check"></i> Screen transitions</li>
+            </ul>
+        </div>
+        <div class="tab-pane">
+            <div class="tab-icon-large">
+                <i data-lucide="flask-conical"></i>
+            </div>
+            <h3>Test on real sizes.</h3>
+            <p>Preview designs exactly as users will see them.</p>
+            <ul class="feature-list">
+                <li><i data-lucide="check"></i> Device frames</li>
+                <li><i data-lucide="check"></i> Real-time preview</li>
+                <li><i data-lucide="check"></i> Multiple viewports</li>
+            </ul>
+        </div>
+        <div class="tab-pane">
+            <div class="tab-icon-large">
+                <i data-lucide="share-2"></i>
+            </div>
+            <h3>Share with a link.</h3>
+            <p>Send designs instantly — no accounts needed to view.</p>
+            <ul class="feature-list">
+                <li><i data-lucide="check"></i> Public share links</li>
+                <li><i data-lucide="check"></i> Password protection</li>
+                <li><i data-lucide="check"></i> Embed anywhere</li>
+            </ul>
+        </div>
+        <div class="tab-pane">
+            <div class="tab-icon-large">
+                <i data-lucide="users-2"></i>
+            </div>
+            <h3>Work together online.</h3>
+            <p>Edit the same design from different devices.</p>
+            <ul class="feature-list">
+                <li><i data-lucide="check"></i> Live cursors</li>
+                <li><i data-lucide="check"></i> Comments & feedback</li>
+                <li><i data-lucide="check"></i> Version history</li>
+            </ul>
+        </div>
+        <div class="tab-pane">
+            <div class="tab-icon-large">
+                <i data-lucide="package"></i>
+            </div>
+            <h3>Export anytime.</h3>
+            <p>Download assets or hand off to developers.</p>
+            <ul class="feature-list">
+                <li><i data-lucide="check"></i> PNG, SVG, PDF export</li>
+                <li><i data-lucide="check"></i> CSS code snippets</li>
+                <li><i data-lucide="check"></i> Asset packages</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<section class="features" id="use-cases">
+    <h2>Built for mobile-first UI/UX design</h2>
+    <div class="features-grid">
+        <div class="feature-card card-purple">
+            <div class="feature-icon">
+                <i data-lucide="cloud"></i>
+            </div>
+            <h3>Runs fully online</h3>
+            <p>No installation. Works on phones, tablets, and low-end devices.</p>
+            <div class="feature-tags">
+                <span class="tag"><i data-lucide="check"></i> Zero install</span>
+                <span class="tag"><i data-lucide="check"></i> Works offline</span>
+            </div>
+        </div>
+        <div class="feature-card card-blue">
+            <div class="feature-icon">
+                <i data-lucide="hand"></i>
+            </div>
+            <h3>Touch-optimized editor</h3>
+            <p>Designed for fingers — not just mouse and keyboard.</p>
+            <div class="feature-tags">
+                <span class="tag"><i data-lucide="check"></i> Gesture support</span>
+                <span class="tag"><i data-lucide="check"></i> Mobile UI</span>
+            </div>
+        </div>
+        <div class="feature-card card-green">
+            <div class="feature-icon">
+                <i data-lucide="heart"></i>
+            </div>
+            <h3>Free to use</h3>
+            <p>Start designing without payment or downloads.</p>
+            <div class="feature-tags">
+                <span class="tag"><i data-lucide="check"></i> No credit card</span>
+                <span class="tag"><i data-lucide="check"></i> Unlimited projects</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="how-it-works">
+    <h2>How it works</h2>
+    <div class="steps-grid">
+        <div class="step-card">
+            <div class="step-number">1</div>
+            <div class="step-icon">
+                <i data-lucide="mouse-pointer-click"></i>
+            </div>
+            <h3>Open in browser</h3>
+            <p>No sign-up required. Just click and start designing.</p>
+        </div>
+        <div class="step-card">
+            <div class="step-number">2</div>
+            <div class="step-icon">
+                <i data-lucide="smartphone"></i>
+            </div>
+            <h3>Choose device size</h3>
+            <p>Pick from popular mobile screen sizes or create custom.</p>
+        </div>
+        <div class="step-card">
+            <div class="step-number">3</div>
+            <div class="step-icon">
+                <i data-lucide="palette"></i>
+            </div>
+            <h3>Design your UI</h3>
+            <p>Drag, drop, and customize components easily.</p>
+        </div>
+        <div class="step-card">
+            <div class="step-number">4</div>
+            <div class="step-icon">
+                <i data-lucide="share-2"></i>
+            </div>
+            <h3>Share or export</h3>
+            <p>Get a link or download your designs instantly.</p>
+        </div>
+    </div>
+</section>
+
+<section class="templates" id="resources">
+    <h2>Start with mobile UI templates</h2>
+    <p class="templates-subtitle">Login screens, dashboards, onboarding, and more.</p>
+    <div class="template-categories">
+        <div class="category-tag tag-purple">
+            <i data-lucide="smartphone"></i>
+            Mobile apps
+        </div>
+        <div class="category-tag tag-blue">
+            <i data-lucide="arrow-right-left"></i>
+            UX flows
+        </div>
+        <div class="category-tag tag-green">
+            <i data-lucide="box"></i>
+            Wireframes
+        </div>
+        <div class="category-tag tag-orange">
+            <i data-lucide="layout"></i>
+            Landing pages
+        </div>
+        <div class="category-tag tag-pink">
+            <i data-lucide="bar-chart"></i>
+            Dashboards
+        </div>
+        <div class="category-tag tag-teal">
+            <i data-lucide="file-text"></i>
+            Forms
+        </div>
+        <div class="category-tag tag-indigo">
+            <i data-lucide="users"></i>
+            Onboarding
+        </div>
+    </div>
+    <div style="text-align:center;margin-top:3rem;">
+        <a href="#" class="btn-primary btn-large">
+            <i data-lucide="rocket"></i>
+            Open free editor
+        </a>
+    </div>
+</section>
+
+<section class="cta-section">
+    <div class="cta-content">
+        <h2>Ready to design your mobile app?</h2>
+        <p>Join thousands of designers creating beautiful mobile UIs every day.</p>
+        <div class="cta-buttons">
+            <a href="#" class="btn-primary btn-large">
+                <i data-lucide="play-circle"></i>
+                Start designing now
+            </a>
+            <a href="#" class="btn-secondary btn-large">
+                <i data-lucide="book-open"></i>
+                Read the docs
+            </a>
+        </div>
+    </div>
+</section>
+
+</main>
+
+<footer>
+    <div class="footer-grid">
+        <div class="footer-section">
+            <h4><i data-lucide="layers"></i> Product</h4>
+            <ul>
+                <li><a href="#"><i data-lucide="edit-3"></i> Editor</a></li>
+                <li><a href="#"><i data-lucide="smartphone"></i> Mobile Design</a></li>
+                <li><a href="#"><i data-lucide="box"></i> Wireframing</a></li>
+                <li><a href="#"><i data-lucide="move"></i> Prototyping</a></li>
+                <li><a href="#"><i data-lucide="users"></i> Collaboration</a></li>
+                <li><a href="#"><i data-lucide="package"></i> Export Tools</a></li>
+                <li><a href="#"><i data-lucide="sparkles"></i> AI Features</a></li>
+                <li><a href="#"><i data-lucide="download"></i> Downloads</a></li>
+                <li><a href="#"><i data-lucide="file-text"></i> Release Notes</a></li>
+                <li><a href="#"><i data-lucide="heart"></i> Free Plan</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-section">
+            <h4><i data-lucide="lightbulb"></i> Use Cases</h4>
+            <ul>
+                <li><a href="#"><i data-lucide="layout"></i> UI Design</a></li>
+                <li><a href="#"><i data-lucide="user"></i> UX Design</a></li>
+                <li><a href="#"><i data-lucide="grid-3x3"></i> Wireframing</a></li>
+                <li><a href="#"><i data-lucide="git-branch"></i> User Flows</a></li>
+                <li><a href="#"><i data-lucide="link"></i> Prototyping</a></li>
+                <li><a href="#"><i data-lucide="brain"></i> Brainstorming</a></li>
+                <li><a href="#"><i data-lucide="presentation"></i> Mockups</a></li>
+                <li><a href="#"><i data-lucide="tablet"></i> Responsive Design</a></li>
+                <li><a href="#"><i data-lucide="smartphone"></i> App Design</a></li>
+                <li><a href="#"><i data-lucide="monitor"></i> Web Design</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-section">
+            <h4><i data-lucide="zap"></i> Features</h4>
+            <ul>
+                <li><a href="#"><i data-lucide="hand"></i> Touch Controls</a></li>
+                <li><a href="#"><i data-lucide="cloud"></i> Cloud Storage</a></li>
+                <li><a href="#"><i data-lucide="users-2"></i> Real-time Collab</a></li>
+                <li><a href="#"><i data-lucide="palette"></i> Design System</a></li>
+                <li><a href="#"><i data-lucide="copy"></i> Components</a></li>
+                <li><a href="#"><i data-lucide="layers"></i> Auto Layout</a></li>
+                <li><a href="#"><i data-lucide="eye"></i> Preview Mode</a></li>
+                <li><a href="#"><i data-lucide="share-2"></i> Share Links</a></li>
+                <li><a href="#"><i data-lucide="message-circle"></i> Comments</a></li>
+                <li><a href="#"><i data-lucide="clock"></i> Version History</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-section">
+            <h4><i data-lucide="book-open"></i> Resources</h4>
+            <ul>
+                <li><a href="#"><i data-lucide="newspaper"></i> Blog</a></li>
+                <li><a href="#"><i data-lucide="compass"></i> Getting Started</a></li>
+                <li><a href="#"><i data-lucide="book"></i> Documentation</a></li>
+                <li><a href="#"><i data-lucide="video"></i> Tutorials</a></li>
+                <li><a href="#"><i data-lucide="file-text"></i> Templates</a></li>
+                <li><a href="#"><i data-lucide="help-circle"></i> Help Center</a></li>
+                <li><a href="#"><i data-lucide="graduation-cap"></i> Learn Design</a></li>
+                <li><a href="#"><i data-lucide="code"></i> API Docs</a></li>
+                <li><a href="#"><i data-lucide="github"></i> GitHub</a></li>
+                <li><a href="#"><i data-lucide="message-square"></i> Community</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-section">
+            <h4><i data-lucide="building"></i> Company</h4>
+            <ul>
+                <li><a href="#"><i data-lucide="info"></i> About Us</a></li>
+                <li><a href="#"><i data-lucide="briefcase"></i> Careers</a></li>
+                <li><a href="#"><i data-lucide="newspaper"></i> Press Kit</a></li>
+                <li><a href="#"><i data-lucide="mail"></i> Contact</a></li>
+                <li><a href="#"><i data-lucide="headphones"></i> Support</a></li>
+                <li><a href="#"><i data-lucide="activity"></i> Status</a></li>
+                <li><a href="#"><i data-lucide="shield"></i> Privacy</a></li>
+                <li><a href="#"><i data-lucide="file-text"></i> Terms</a></li>
+                <li><a href="#"><i data-lucide="cookie"></i> Cookies</a></li>
+                <li><a href="#"><i data-lucide="settings"></i> Preferences</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-section">
+            <h4><i data-lucide="share-2"></i> Connect</h4>
+            <ul>
+                <li><a href="#"><i data-lucide="twitter"></i> Twitter</a></li>
+                <li><a href="#"><i data-lucide="linkedin"></i> LinkedIn</a></li>
+                <li><a href="#"><i data-lucide="instagram"></i> Instagram</a></li>
+                <li><a href="#"><i data-lucide="facebook"></i> Facebook</a></li>
+                <li><a href="#"><i data-lucide="youtube"></i> YouTube</a></li>
+                <li><a href="#"><i data-lucide="github"></i> GitHub</a></li>
+                <li><a href="#"><i data-lucide="twitch"></i> Discord</a></li>
+                <li><a href="#"><i data-lucide="rss"></i> RSS Feed</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="footer-bottom">
+        <div class="footer-bottom-content">
+            <div class="footer-logo">
+                <i data-lucide="layers"></i>
+                <span>iota</span>
+            </div>
+            <p>&copy; 2026 iota — Free mobile UI/UX design tool. Made with <i data-lucide="heart" class="heart-icon"></i> for designers.</p>
+            <div class="footer-links">
+                <a href="#"><i data-lucide="shield"></i> Privacy</a>
+                <a href="#"><i data-lucide="file-text"></i> Terms</a>
+                <a href="#"><i data-lucide="cookie"></i> Cookies</a>
+                <a href="#"><i data-lucide="eye-off"></i> Do Not Sell My Info</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="main.js"></script>
+<script>
+    // Initialize Lucide icons
+    lucide.createIcons();
+</script>
+</body>
+</html>
