@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editor - iota</title>
+    <link rel="stylesheet" href="/chillax.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="editor.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="editor-body">
+
+<!-- Editor Header -->
+<header class="editor-header">
+    <div class="editor-header-left">
+        <a href="index.html" class="editor-logo">
+            <i data-lucide="layers"></i>
+            <span>iota</span>
+        </a>
+        <div class="project-name">
+            <input type="text" value="Untitled Project" id="projectName" />
+            <i data-lucide="edit-2"></i>
+        </div>
+    </div>
+
+    <div class="editor-header-center">
+        <button class="header-btn" id="undoBtn" title="Undo">
+            <i data-lucide="undo"></i>
+        </button>
+        <button class="header-btn" id="redoBtn" title="Redo">
+            <i data-lucide="redo"></i>
+        </button>
+        <div class="divider"></div>
+        <button class="header-btn active" id="selectTool" title="Select (V)">
+            <i data-lucide="mouse-pointer"></i>
+        </button>
+        <button class="header-btn" id="frameTool" title="Frame (F)">
+            <i data-lucide="square"></i>
+        </button>
+        <button class="header-btn" id="textTool" title="Text (T)">
+            <i data-lucide="type"></i>
+        </button>
+        <button class="header-btn" id="shapeTool" title="Shape (R)">
+            <i data-lucide="circle"></i>
+        </button>
+        <button class="header-btn" id="penTool" title="Pen (P)">
+            <i data-lucide="pen-tool"></i>
+        </button>
+        <button class="header-btn" id="imageTool" title="Image">
+            <i data-lucide="image"></i>
+        </button>
+    </div>
+
+    <div class="editor-header-right">
+        <button class="header-btn" id="previewBtn">
+            <i data-lucide="play"></i>
+            <span>Preview</span>
+        </button>
+        <button class="header-btn" id="shareBtn">
+            <i data-lucide="share-2"></i>
+            <span>Share</span>
+        </button>
+        <button class="btn-primary" id="exportBtn">
+            <i data-lucide="download"></i>
+            <span>Export</span>
+        </button>
+        <div class="user-menu">
+            <button class="header-btn user-btn">
+                <i data-lucide="user"></i>
+            </button>
+        </div>
+    </div>
+</header>
+
+<!-- Main Editor Layout -->
+<div class="editor-layout">
+    
+    <!-- Left Sidebar - Layers & Pages -->
+    <aside class="sidebar sidebar-left" id="leftSidebar">
+        <div class="sidebar-tabs">
+            <button class="sidebar-tab active" data-panel="layers">
+                <i data-lucide="layers"></i>
+                <span>Layers</span>
+            </button>
+            <button class="sidebar-tab" data-panel="pages">
+                <i data-lucide="file"></i>
+                <span>Pages</span>
+            </button>
+            <button class="sidebar-tab" data-panel="assets">
+                <i data-lucide="image"></i>
+                <span>Assets</span>
+            </button>
+        </div>
+
+        <div class="sidebar-content">
+            <!-- Layers Panel -->
+            <div class="sidebar-panel active" id="layersPanel">
+                <div class="panel-header">
+                    <h3>Layers</h3>
+                    <button class="icon-btn" title="Add layer">
+                        <i data-lucide="plus"></i>
+                    </button>
+                </div>
+                <div class="panel-body">
+                    <div class="layer-tree">
+                        <div class="layer-item">
+                            <i data-lucide="square"></i>
+                            <span>Frame 1</span>
+                            <i data-lucide="eye" class="layer-action"></i>
+                        </div>
+                        <div class="layer-item layer-nested">
+                            <i data-lucide="type"></i>
+                            <span>Text layer</span>
+                            <i data-lucide="eye" class="layer-action"></i>
+                        </div>
+                        <div class="layer-item layer-nested">
+                            <i data-lucide="circle"></i>
+                            <span>Shape</span>
+                            <i data-lucide="eye" class="layer-action"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pages Panel -->
+            <div class="sidebar-panel" id="pagesPanel">
+                <div class="panel-header">
+                    <h3>Pages</h3>
+                    <button class="icon-btn" title="Add page">
+                        <i data-lucide="plus"></i>
+                    </button>
+                </div>
+                <div class="panel-body">
+                    <div class="page-list">
+                        <div class="page-item active">
+                            <i data-lucide="smartphone"></i>
+                            <span>Home Screen</span>
+                        </div>
+                        <div class="page-item">
+                            <i data-lucide="smartphone"></i>
+                            <span>Login</span>
+                        </div>
+                        <div class="page-item">
+                            <i data-lucide="smartphone"></i>
+                            <span>Dashboard</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Assets Panel -->
+            <div class="sidebar-panel" id="assetsPanel">
+                <div class="panel-header">
+                    <h3>Assets</h3>
+                    <button class="icon-btn" title="Upload asset">
+                        <i data-lucide="upload"></i>
+                    </button>
+                </div>
+                <div class="panel-body">
+                    <div class="assets-grid">
+                        <div class="asset-item">
+                            <div class="asset-thumbnail">
+                                <i data-lucide="image"></i>
+                            </div>
+                            <span>logo.png</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button class="sidebar-toggle" id="leftToggle">
+            <i data-lucide="chevron-left"></i>
+        </button>
+    </aside>
+
+    <!-- Canvas Area -->
+    <main class="canvas-area">
+        <div class="canvas-toolbar">
+            <div class="zoom-controls">
+                <button class="toolbar-btn" id="zoomOut">
+                    <i data-lucide="minus"></i>
+                </button>
+                <span class="zoom-level" id="zoomLevel">100%</span>
+                <button class="toolbar-btn" id="zoomIn">
+                    <i data-lucide="plus"></i>
+                </button>
+                <button class="toolbar-btn" id="zoomFit">
+                    <i data-lucide="maximize-2"></i>
+                </button>
+            </div>
+
+            <div class="view-controls">
+                <button class="toolbar-btn" id="gridToggle" title="Toggle grid">
+                    <i data-lucide="grid-3x3"></i>
+                </button>
+                <button class="toolbar-btn" id="rulersToggle" title="Toggle rulers">
+                    <i data-lucide="ruler"></i>
+                </button>
+                <button class="toolbar-btn" id="guidesToggle" title="Toggle guides">
+                    <i data-lucide="minus"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="canvas-wrapper">
+            <div class="canvas-viewport" id="canvasViewport">
+                <div class="canvas" id="mainCanvas">
+                    <!-- Device frame selection overlay -->
+                    <div class="device-frame-overlay" id="deviceOverlay">
+                        <div class="device-selection">
+                            <h2>Choose a device to start</h2>
+                            <div class="device-grid">
+                                <button class="device-option" data-device="iphone14">
+                                    <i data-lucide="smartphone"></i>
+                                    <span>iPhone 14</span>
+                                    <small>390 × 844</small>
+                                </button>
+                                <button class="device-option" data-device="pixel7">
+                                    <i data-lucide="smartphone"></i>
+                                    <span>Pixel 7</span>
+                                    <small>412 × 915</small>
+                                </button>
+                                <button class="device-option" data-device="ipad">
+                                    <i data-lucide="tablet"></i>
+                                    <span>iPad Pro</span>
+                                    <small>1024 × 1366</small>
+                                </button>
+                                <button class="device-option" data-device="desktop">
+                                    <i data-lucide="monitor"></i>
+                                    <span>Desktop</span>
+                                    <small>1920 × 1080</small>
+                                </button>
+                                <button class="device-option" data-device="custom">
+                                    <i data-lucide="maximize"></i>
+                                    <span>Custom Size</span>
+                                    <small>Your dimensions</small>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Main artboard (hidden initially) -->
+                    <div class="artboard" id="artboard" style="display: none;">
+                        <div class="artboard-content">
+                            <!-- Design elements will be added here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Right Sidebar - Components & Properties -->
+    <aside class="sidebar sidebar-right" id="rightSidebar">
+        <div class="sidebar-tabs">
+            <button class="sidebar-tab active" data-panel="components">
+                <i data-lucide="box"></i>
+                <span>Components</span>
+            </button>
+            <button class="sidebar-tab" data-panel="properties">
+                <i data-lucide="sliders"></i>
+                <span>Properties</span>
+            </button>
+            <button class="sidebar-tab" data-panel="plugins">
+                <i data-lucide="puzzle"></i>
+                <span>Plugins</span>
+            </button>
+        </div>
+
+        <div class="sidebar-content">
+            <!-- Components Panel -->
+            <div class="sidebar-panel active" id="componentsPanel">
+                <div class="panel-header">
+                    <input type="search" placeholder="Search components..." class="search-input">
+                </div>
+                <div class="panel-body">
+                    <div class="component-categories">
+                        <div class="component-category">
+                            <h4>Mobile UI</h4>
+                            <div class="component-list">
+                                <div class="component-item" draggable="true" data-component="button">
+                                    <i data-lucide="square"></i>
+                                    <span>Button</span>
+                                </div>
+                                <div class="component-item" draggable="true" data-component="input">
+                                    <i data-lucide="type"></i>
+                                    <span>Text Input</span>
+                                </div>
+                                <div class="component-item" draggable="true" data-component="card">
+                                    <i data-lucide="credit-card"></i>
+                                    <span>Card</span>
+                                </div>
+                                <div class="component-item" draggable="true" data-component="navbar">
+                                    <i data-lucide="menu"></i>
+                                    <span>Navigation Bar</span>
+                                </div>
+                                <div class="component-item" draggable="true" data-component="tab">
+                                    <i data-lucide="columns"></i>
+                                    <span>Tab Bar</span>
+                                </div>
+                                <div class="component-item" draggable="true" data-component="list">
+                                    <i data-lucide="list"></i>
+                                    <span>List Item</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="component-category">
+                            <h4>Layout</h4>
+                            <div class="component-list">
+                                <div class="component-item" draggable="true" data-component="container">
+                                    <i data-lucide="layout"></i>
+                                    <span>Container</span>
+                                </div>
+                                <div class="component-item" draggable="true" data-component="grid">
+                                    <i data-lucide="grid-3x3"></i>
+                                    <span>Grid</span>
+                                </div>
+                                <div class="component-item" draggable="true" data-component="flexbox">
+                                    <i data-lucide="align-left"></i>
+                                    <span>Flex Container</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="component-category">
+                            <h4>Forms</h4>
+                            <div class="component-list">
+                                <div class="component-item" draggable="true" data-component="checkbox">
+                                    <i data-lucide="check-square"></i>
+                                    <span>Checkbox</span>
+                                </div>
+                                <div class="component-item" draggable="true" data-component="radio">
+                                    <i data-lucide="circle"></i>
+                                    <span>Radio Button</span>
+                                </div>
+                                <div class="component-item" draggable="true" data-component="toggle">
+                                    <i data-lucide="toggle-right"></i>
+                                    <span>Toggle</span>
+                                </div>
+                                <div class="component-item" draggable="true" data-component="select">
+                                    <i data-lucide="chevron-down"></i>
+                                    <span>Select</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Properties Panel -->
+            <div class="sidebar-panel" id="propertiesPanel">
+                <div class="panel-header">
+                    <h3>Properties</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="property-section">
+                        <h4>Position</h4>
+                        <div class="property-grid">
+                            <div class="property-field">
+                                <label>X</label>
+                                <input type="number" value="0" />
+                            </div>
+                            <div class="property-field">
+                                <label>Y</label>
+                                <input type="number" value="0" />
+                            </div>
+                            <div class="property-field">
+                                <label>W</label>
+                                <input type="number" value="100" />
+                            </div>
+                            <div class="property-field">
+                                <label>H</label>
+                                <input type="number" value="100" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="property-section">
+                        <h4>Appearance</h4>
+                        <div class="property-field">
+                            <label>Fill</label>
+                            <input type="color" value="#6366f1" />
+                        </div>
+                        <div class="property-field">
+                            <label>Stroke</label>
+                            <input type="color" value="#000000" />
+                        </div>
+                        <div class="property-field">
+                            <label>Opacity</label>
+                            <input type="range" min="0" max="100" value="100" />
+                        </div>
+                    </div>
+
+                    <div class="property-section">
+                        <h4>Border Radius</h4>
+                        <div class="property-grid">
+                            <div class="property-field">
+                                <label>TL</label>
+                                <input type="number" value="0" />
+                            </div>
+                            <div class="property-field">
+                                <label>TR</label>
+                                <input type="number" value="0" />
+                            </div>
+                            <div class="property-field">
+                                <label>BL</label>
+                                <input type="number" value="0" />
+                            </div>
+                            <div class="property-field">
+                                <label>BR</label>
+                                <input type="number" value="0" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Plugins Panel -->
+            <div class="sidebar-panel" id="pluginsPanel">
+                <div class="panel-header">
+                    <h3>Plugins</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="plugin-list">
+                        <div class="plugin-item">
+                            <i data-lucide="sparkles"></i>
+                            <div>
+                                <h5>Auto Layout</h5>
+                                <p>Smart spacing & alignment</p>
+                            </div>
+                        </div>
+                        <div class="plugin-item">
+                            <i data-lucide="wand-2"></i>
+                            <div>
+                                <h5>Content Reel</h5>
+                                <p>Generate placeholder content</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button class="sidebar-toggle" id="rightToggle">
+            <i data-lucide="chevron-right"></i>
+        </button>
+    </aside>
+</div>
+
+<!-- Modals -->
+<!-- Export Modal -->
+<div class="modal" id="exportModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Export Design</h3>
+            <button class="modal-close">
+                <i data-lucide="x"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="export-options">
+                <button class="export-option">
+                    <i data-lucide="image"></i>
+                    <span>PNG</span>
+                </button>
+                <button class="export-option">
+                    <i data-lucide="file"></i>
+                    <span>SVG</span>
+                </button>
+                <button class="export-option">
+                    <i data-lucide="file-text"></i>
+                    <span>PDF</span>
+                </button>
+                <button class="export-option">
+                    <i data-lucide="code"></i>
+                    <span>Code</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Share Modal -->
+<div class="modal" id="shareModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Share Design</h3>
+            <button class="modal-close">
+                <i data-lucide="x"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="share-link">
+                <input type="text" value="https://iota.app/share/abc123" readonly />
+                <button class="btn-primary">
+                    <i data-lucide="copy"></i>
+                    Copy
+                </button>
+            </div>
+            <div class="share-options">
+                <label>
+                    <input type="checkbox" />
+                    Anyone with link can view
+                </label>
+                <label>
+                    <input type="checkbox" />
+                    Allow comments
+                </label>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="editor.js"></script>
+<script>lucide.createIcons();</script>
+</body>
+</html>
