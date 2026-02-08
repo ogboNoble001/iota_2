@@ -474,7 +474,7 @@ nav.scrolled {
         right: 5px;
     }
 }
-/* Trusted Section */
+/* Trusted Section 
 .trusted {
     padding: 4rem 2rem;
     text-align: center;
@@ -541,6 +541,7 @@ nav.scrolled {
     text-transform: uppercase;
     letter-spacing: 1px;
 }
+*/
 
 /* Workflow Section */
 .workflow {
@@ -718,22 +719,35 @@ nav.scrolled {
     font-size: 0.85rem;
     color: var(--text-light);
 }
-
+.instrument{
+    font-family: "Instrument serif", serif;
+}
 .tag i {
     width: 14px;
     height: 14px;
     color: var(--green);
 }
+.flex-row{
+    display: flex;
+    
+    gap: 1em;
+}
 
 /* How It Works Section */
 .how-it-works {
+    justify-content: flex-end;
     padding: 6rem 2rem;
     background: var(--bg-light);
 }
 
 .how-it-works h2 {
-    text-align: center;
-    font-size: 3rem;
+    text-align: left;
+    font-family: "Instrument serif";
+    color: #6b7280;
+    width: fit-content;
+    padding: .2em .4em;
+    background-color: #EFF3FF;
+    font-size: 1rem;
     margin-bottom: 4rem;
 }
 
@@ -750,6 +764,11 @@ nav.scrolled {
     background: ghostwhite;
     padding: 3rem 2rem;
     border-radius: 16px;
+    background: 
+        radial-gradient(circle, rgba(0, 0, 0, 0.05) 1.5px, transparent 4.5px);
+    background-size: 30px 30px;
+    background-position: 0 0;
+    background-attachment: scroll;
     text-align: center;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
     transition: transform 0.3s;
@@ -759,28 +778,29 @@ nav.scrolled {
     transform: translateY(-5px);
 }
 
-.step-number {
+.step-number{
     position: absolute;
-    top: -15px;
+    top: -.2em;
     left: 50%;
     transform: translateX(-50%);
-    width: 40px;
-    height: 40px;
-    background: linear-gradient(135deg, var(--primary), var(--purple));
-    color: white;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    font-size: 1.2rem;
+    font-size: 260px;
+    opacity: .09;
+    color: grey;
+   font-family: "Instrument seeif", serif;
+    font-weight: 300;
 }
+
+
 
 .step-icon {
     width: 64px;
     height: 64px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     margin: 1rem auto;
-    color: var(--primary);
+    color: ghostwhite;
+    background-color: color-mix(in srgb, #008080 70%, white);
 }
 
 .step-card h3 {
