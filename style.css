@@ -1,7 +1,7 @@
 * {
     margin: 0;
     padding: 0;
-    font-family: 'Chillax-Medium';
+    
     box-sizing: border-box;
 }
 
@@ -11,7 +11,7 @@
     --text-dark: #1f2937;
     --text-light: #6b7280;
     --bg-light: #f9fafb;
-    --white: #ffffff;
+    --white: ghostwhite;
     --border: #e5e7eb;
     
     /* Color variations */
@@ -35,8 +35,14 @@
 
 body {
     color: var(--text-dark);
+    background-color: ghostwhite;
     line-height: 1.6;
-    overflow-x: hidden;
+    font-family: 'Chillax-Medium';
+    overflow-x: hidden
+}
+
+button{
+    font-family: 'Chillax-Medium';
 }
 
 /* Navigation */
@@ -44,7 +50,7 @@ nav {
     position: fixed;
     top: 0;
     width: 100%;
-    background: rgba(255, 255, 255, 0.95);
+    background: ghostwhite;
     backdrop-filter: blur(10px);
     border-bottom: 1px solid var(--border);
     z-index: 1000;
@@ -177,7 +183,13 @@ nav.scrolled {
     margin-top: 80px;
     padding: 6rem 2rem 4rem;
     text-align: center;
-    background: linear-gradient(135deg, #f5f7ff 0%, #ffffff 50%, #fff7f5 100%);
+    background: ghostwhite;
+    max-width: 760px;
+    background: 
+        radial-gradient(circle, rgba(0, 0, 0, 0.05) 1.5px, transparent 4.5px);
+    background-size: 30px 30px;
+    background-position: 0 0;
+    background-attachment: scroll;
 }
 
 .hero-badge {
@@ -208,10 +220,7 @@ nav.scrolled {
     font-size: 4rem;
     font-weight: 800;
     margin-bottom: 1.5rem;
-    background: linear-gradient(135deg, var(--primary) 0%, var(--purple) 50%, var(--pink) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    
     line-height: 1.2;
 }
 
@@ -238,7 +247,7 @@ nav.scrolled {
     position: relative;
     max-width: 1200px;
     width: 80%;
-    margin: 3rem auto;
+    margin: 1rem auto;
     height: 400px;
     overflow: hidden;
     border-radius: 16px;
@@ -275,10 +284,6 @@ nav.scrolled {
     transition: transform 0.3s ease;
 }
 
-.testimonial:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
-}
 
 /* Colored accent bar on left */
 .slide-purple .testimonial { border-left: 5px solid var(--purple); }
@@ -360,7 +365,7 @@ nav.scrolled {
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: #cbd5e1;
+    background: ghostwhite;
     cursor: pointer;
     transition: all 0.3s ease;
     border: none;
@@ -545,6 +550,54 @@ nav.scrolled {
     font-size: 3rem;
     margin-bottom: 3rem;
 }
+/* Timeline */
+.timeline {
+    position: relative;
+    padding: 2em 3em;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 23px;
+    top: 34px;
+    bottom: 8px;
+    width: 2px;
+    background: var(--border);
+}
+
+.timeline-item {
+    position: relative;
+    padding-bottom: 2rem;
+}
+
+.timeline-item:last-child {
+    padding-bottom: 0;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: -2rem;
+    top: 4px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--primary);
+    border: 3px solid white;
+    box-shadow: 0 0 0 2px var(--primary);
+}
+
+.timeline-content strong {
+    display: block;
+    color: var(--primary);
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.timeline-content p {
+    color: var(--text-light);
+    margin: 0;
+}
 
 .tabs {
     display: flex;
@@ -555,7 +608,7 @@ nav.scrolled {
 }
 
 .tab-btn {
-    background: white;
+    background: ghostwhite;
     border: 2px solid var(--border);
     padding: 1rem 1.5rem;
     border-radius: 50px;
@@ -670,7 +723,7 @@ nav.scrolled {
 /* Features Grid */
 .features {
     padding: 6rem 2rem;
-    background: white;
+    background: ghostwhite;
 }
 
 .features h2 {
@@ -688,7 +741,7 @@ nav.scrolled {
 }
 
 .feature-card {
-    background: white;
+    background: ghostwhite;
     padding: 3rem;
     border-radius: 16px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
@@ -788,7 +841,7 @@ nav.scrolled {
 
 .step-card {
     position: relative;
-    background: white;
+    background: ghostwhite;
     padding: 3rem 2rem;
     border-radius: 16px;
     text-align: center;
@@ -836,7 +889,7 @@ nav.scrolled {
 /* Templates Section */
 .templates {
     padding: 6rem 2rem;
-    background: white;
+    background: ghostwhite;
 }
 
 .templates h2 {
@@ -963,7 +1016,7 @@ nav.scrolled {
 }
 
 .cta-section .btn-primary {
-    background: white;
+    background: ghostwhite;
     color: var(--primary);
 }
 
@@ -979,7 +1032,7 @@ nav.scrolled {
 }
 
 .cta-section .btn-secondary:hover {
-    background: white;
+    background: ghostwhite;
     color: var(--primary);
 }
 

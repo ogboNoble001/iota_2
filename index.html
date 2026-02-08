@@ -4,10 +4,183 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>iota — Free mobile UI/UX design in your browser</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300..700;1,300..700&display=swap" rel="stylesheet">  
     <link rel="stylesheet" href="/chillax.css">
     <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
+      <style>
+      #typewriter {
+          position: absolute;
+          right:2em ;
+          top: 1.4em;
+          opacity: .7;
+          font-size: 1.2rem;
+          white-space: nowrap;
+          border-right: 2px solid #000;
+          padding-right: 6px;
+          animation: blink 0.9s infinite;
+      }
+      
+      @keyframes blink {
+          50% {
+              border-color: transparent;
+          }
+      }
+  </style>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+    const texts = [
+        "Step into the spotlight .",
+        "Ready . . . "
+    ];
+    
+    let textIndex = 0;
+    let charIndex = 0;
+    let isDeleting = false;
+    let isDeletingTypo = false; // New flag to track typo deletion
+    
+    const typewriter = document.getElementById("typewriter");
+    
+    // Realistic typing speeds (in ms)
+    const speeds = {
+        normal: () => 80 + Math.random() * 100,      // 80-180ms
+        fast: () => 40 + Math.random() * 60,         // 40-100ms
+        slow: () => 150 + Math.random() * 150,       // 150-300ms
+        punctuation: () => 200 + Math.random() * 200, // 200-400ms (pause after punctuation)
+        delete: () => 300 + Math.random() * 40,       // 30-70ms (faster deletion)
+        mistake: () => 600 + Math.random() * 400     // 600-1000ms pause when noticing mistake
+    };
+    
+    // Chance of making a "typo" that gets corrected
+    const typoChance = 0.08; // 8% chance per character
+    let shouldMakeTypo = false;
+    let typosMade = 0;
+    
+    function getTypingSpeed() {
+        if (isDeleting || isDeletingTypo) return speeds.delete();
+        
+        // Slower after punctuation
+        if (charIndex > 0) {
+            const prevChar = texts[textIndex].charAt(charIndex - 1);
+            if (['.', ',', '!', '?', ';', ':'].includes(prevChar)) {
+                return speeds.punctuation();
+            }
+        }
+        
+        // Random speed variation for realism
+        const rand = Math.random();
+        if (rand < 0.1) return speeds.slow();
+        if (rand < 0.3) return speeds.fast();
+        return speeds.normal();
+    }
+    
+    function shouldMakeMistake() {
+        // Don't make mistakes on very short texts or spaces
+        if (texts[textIndex].length < 5 || texts[textIndex].charAt(charIndex) === ' ') {
+            return false;
+        }
+        // Limit typos per text
+        if (typosMade >= 2) return false;
+        
+        return Math.random() < typoChance;
+    }
+    
+    function getRandomWrongChar(correctChar) {
+        // Common keyboard mistakes (nearby keys)
+        const keyboardMap = {
+            'a': ['s', 'q', 'w'], 'b': ['v', 'g', 'h', 'n'], 'c': ['x', 'd', 'f', 'v'],
+            'd': ['s', 'e', 'r', 'f', 'c'], 'e': ['w', 'r', 'd'], 'f': ['d', 'r', 't', 'g', 'v'],
+            'g': ['f', 't', 'y', 'h', 'b'], 'h': ['g', 'y', 'u', 'j', 'n'], 'i': ['u', 'o', 'k'],
+            'j': ['h', 'u', 'i', 'k', 'm'], 'k': ['j', 'i', 'o', 'l'], 'l': ['k', 'o', 'p'],
+            'm': ['n', 'j', 'k'], 'n': ['b', 'h', 'j', 'm'], 'o': ['i', 'p', 'l'],
+            'p': ['o', 'l'], 'q': ['w', 'a'], 'r': ['e', 't', 'f'],
+            's': ['a', 'w', 'd', 'x'], 't': ['r', 'y', 'g'], 'u': ['y', 'i', 'j'],
+            'v': ['c', 'f', 'g', 'b'], 'w': ['q', 'e', 's'], 'x': ['z', 's', 'd', 'c'],
+            'y': ['t', 'u', 'h'], 'z': ['a', 's', 'x']
+        };
+        
+        const lower = correctChar.toLowerCase();
+        const mistakes = keyboardMap[lower] || ['x', 'z', 'q'];
+        const wrongChar = mistakes[Math.floor(Math.random() * mistakes.length)];
+        
+        // Preserve case
+        return correctChar === correctChar.toUpperCase() ? wrongChar.toUpperCase() : wrongChar;
+    }
+    
+    function type() {
+        const currentText = texts[textIndex];
+        
+        // Deleting a typo (only one character)
+        if (isDeletingTypo) {
+            typewriter.textContent = currentText.substring(0, charIndex - 1);
+            charIndex--;
+            isDeletingTypo = false;
+            // Continue typing the correct character after deleting typo
+            setTimeout(type, speeds.normal());
+            return;
+        }
+        
+        // Typing forward
+        if (!isDeleting && charIndex <= currentText.length) {
+            // Check if we should make a typo
+            if (!shouldMakeTypo && charIndex < currentText.length && shouldMakeMistake()) {
+                shouldMakeTypo = true;
+            }
+            
+            if (shouldMakeTypo && charIndex < currentText.length) {
+                // Type wrong character
+                const wrongChar = getRandomWrongChar(currentText.charAt(charIndex));
+                typewriter.textContent += wrongChar;
+                charIndex++;
+                shouldMakeTypo = false;
+                typosMade++;
+                
+                // Pause when noticing mistake (human reaction time)
+                setTimeout(() => {
+                    isDeletingTypo = true;
+                    setTimeout(type, speeds.delete());
+                }, speeds.mistake()); // 600-1000ms pause
+                return;
+            }
+            
+            if (charIndex < currentText.length) {
+                typewriter.textContent += currentText.charAt(charIndex);
+                charIndex++;
+                setTimeout(type, getTypingSpeed());
+            } else {
+                // Finished typing, pause before clearing
+                setTimeout(() => {
+                    isDeleting = true;
+                    setTimeout(type, speeds.delete());
+                }, 2000);
+            }
+        }
+        // Deleting entire sentence (to move to next one)
+        else if (isDeleting && charIndex > 0) {
+            typewriter.textContent = currentText.substring(0, charIndex - 1);
+            charIndex--;
+            setTimeout(type, speeds.delete());
+        }
+        // Done deleting, move to next text
+        else if (isDeleting && charIndex === 0) {
+            isDeleting = false;
+            typosMade = 0;
+            textIndex = (textIndex + 1) % texts.length;
+            setTimeout(type, 500);
+        }
+    }
+    
+    // Start typing
+    type();
+});
+</script>
+
 </head>
 <body>
 <a href="#main" class="skip-link">Skip to main content</a>
@@ -16,7 +189,7 @@
     <div class="nav-container">
         <div class="logo">
             <i data-lucide="layers" class="logo-icon"></i>
-            iota
+            
         </div>
         <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
             <i data-lucide="menu"></i>
@@ -34,14 +207,14 @@
     </div>
 </nav>
 
-<main id="main">
+<main id="main" style="position: relative;">
+
+  <span id="typewriter"></span>
 <img style="position: absolute; height:70px; width:100px;" src="/file_00000000a61c71f492a1a36e6ded6a3e.png" alt="" />
 <section class="hero">
-    <div class="hero-badge">
-        <i data-lucide="sparkles"></i>
-        100% Free & Browser-based
-    </div>
-    <h1>Design mobile apps directly in your browser</h1>
+
+    <h1>Design <span style="font-family: 'Instrument Serif', serif; font-style: italic; font-weight: 300;">mobile  </span> apps directly in your <br />
+    <span style="font-family: 'Instrument Serif', serif; font-style: italic; font-weight: 300;">browser  </span></h1>
     <p>
         iota is a <strong>free, mobile-first UI/UX design tool</strong> that runs entirely online.<br>
         Wireframe, prototype, and design screens from your phone — no downloads.
@@ -58,7 +231,8 @@
     </div>
     <img style="position: absolute; height:70px; width:100px;" src="/output-onlinegiftools.gif" alt="" />
 </section>
-
+<br />
+ <div style="font-family: 'Instrument Serif', serif; font-style: italic; text-align: center; font-weight: 300; font-size: 32px; "> <span>Be Creative</span> </div> 
 <div class="carousel">
     <div class="carousel-inner">
         
@@ -124,6 +298,7 @@
     </div>
 </div>
     <img height="50px" width="70px" style="right: 0; position: absolute;" src="/file_0000000085f071f48f19e09c246f59b5.png" alt="" />
+    <!--
 <section class="trusted">
     <h3><i data-lucide="check-circle"></i> Used by mobile designers, students & indie builders</h3>
     <div class="stats-grid">
@@ -149,174 +324,58 @@
         </div>
     </div>
 </section>
-
+-->
 <section class="workflow" id="product">
     <h2>From idea to mobile UI — all inside your browser</h2>
-    <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab(0)">
-            <i data-lucide="brain"></i> Think
-        </button>
-        <button class="tab-btn" onclick="switchTab(1)">
-            <i data-lucide="box"></i> Wireframe
-        </button>
-        <button class="tab-btn" onclick="switchTab(2)">
-            <i data-lucide="palette"></i> Design
-        </button>
-        <button class="tab-btn" onclick="switchTab(3)">
-            <i data-lucide="move"></i> Prototype
-        </button>
-        <button class="tab-btn" onclick="switchTab(4)">
-            <i data-lucide="flask-conical"></i> Test
-        </button>
-        <button class="tab-btn" onclick="switchTab(5)">
-            <i data-lucide="share-2"></i> Share
-        </button>
-        <button class="tab-btn" onclick="switchTab(6)">
-            <i data-lucide="users-2"></i> Collaborate
-        </button>
-        <button class="tab-btn" onclick="switchTab(7)">
-            <i data-lucide="package"></i> Export
-        </button>
-    </div>
-
-    <div class="tab-content">
-        <div class="tab-pane active">
-            <div class="tab-icon-large">
-                <i data-lucide="brain"></i>
-            </div>
-            <h3>Start with an idea.</h3>
-            <p>Quickly sketch app concepts and UX flows using touch-friendly tools.</p>
-            <ul class="feature-list">
-                <li><i data-lucide="check"></i> Mind mapping tools</li>
-                <li><i data-lucide="check"></i> Sticky notes & boards</li>
-                <li><i data-lucide="check"></i> Flow diagrams</li>
-            </ul>
-        </div>
-        <div class="tab-pane">
-            <div class="tab-icon-large">
-                <i data-lucide="box"></i>
-            </div>
-            <h3>Create mobile wireframes.</h3>
-            <p>Low-fidelity wireframes optimized for small screens and thumbs.</p>
-            <ul class="feature-list">
-                <li><i data-lucide="check"></i> Pre-built components</li>
-                <li><i data-lucide="check"></i> Responsive grids</li>
-                <li><i data-lucide="check"></i> Quick mockups</li>
-            </ul>
-        </div>
-        <div class="tab-pane">
-            <div class="tab-icon-large">
-                <i data-lucide="palette"></i>
-            </div>
-            <h3>Design UI visually.</h3>
-            <p>Buttons, inputs, cards, layouts — built for mobile apps.</p>
-            <ul class="feature-list">
-                <li><i data-lucide="check"></i> Component library</li>
-                <li><i data-lucide="check"></i> Color & typography tools</li>
-                <li><i data-lucide="check"></i> Icon integration</li>
-            </ul>
-        </div>
-        <div class="tab-pane">
-            <div class="tab-icon-large">
-                <i data-lucide="move"></i>
-            </div>
-            <h3>Prototype interactions.</h3>
-            <p>Tap, swipe, scroll, and flow between screens.</p>
-            <ul class="feature-list">
-                <li><i data-lucide="check"></i> Interactive hotspots</li>
-                <li><i data-lucide="check"></i> Gesture animations</li>
-                <li><i data-lucide="check"></i> Screen transitions</li>
-            </ul>
-        </div>
-        <div class="tab-pane">
-            <div class="tab-icon-large">
-                <i data-lucide="flask-conical"></i>
-            </div>
-            <h3>Test on real sizes.</h3>
-            <p>Preview designs exactly as users will see them.</p>
-            <ul class="feature-list">
-                <li><i data-lucide="check"></i> Device frames</li>
-                <li><i data-lucide="check"></i> Real-time preview</li>
-                <li><i data-lucide="check"></i> Multiple viewports</li>
-            </ul>
-        </div>
-        <div class="tab-pane">
-            <div class="tab-icon-large">
-                <i data-lucide="share-2"></i>
-            </div>
-            <h3>Share with a link.</h3>
-            <p>Send designs instantly — no accounts needed to view.</p>
-            <ul class="feature-list">
-                <li><i data-lucide="check"></i> Public share links</li>
-                <li><i data-lucide="check"></i> Password protection</li>
-                <li><i data-lucide="check"></i> Embed anywhere</li>
-            </ul>
-        </div>
-        <div class="tab-pane">
-            <div class="tab-icon-large">
-                <i data-lucide="users-2"></i>
-            </div>
-            <h3>Work together online.</h3>
-            <p>Edit the same design from different devices.</p>
-            <ul class="feature-list">
-                <li><i data-lucide="check"></i> Live cursors</li>
-                <li><i data-lucide="check"></i> Comments & feedback</li>
-                <li><i data-lucide="check"></i> Version history</li>
-            </ul>
-        </div>
-        <div class="tab-pane">
-            <div class="tab-icon-large">
-                <i data-lucide="package"></i>
-            </div>
-            <h3>Export anytime.</h3>
-            <p>Download assets or hand off to developers.</p>
-            <ul class="feature-list">
-                <li><i data-lucide="check"></i> PNG, SVG, PDF export</li>
-                <li><i data-lucide="check"></i> CSS code snippets</li>
-                <li><i data-lucide="check"></i> Asset packages</li>
-            </ul>
-        </div>
-    </div>
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-marker"></div>
+                            <div class="timeline-content">
+                                <strong>Think</strong>
+                                <p>Founded with mission to democratize mobile design</p>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-marker"></div>
+                            <div class="timeline-content">
+                                <strong>Wireframe</strong>
+                                <p>Launched beta version to first 1,000 designers</p>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-marker"></div>
+                            <div class="timeline-content">
+                                <strong>Design</strong>
+                                <p>Public launch with full feature set</p>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-marker"></div>
+                            <div class="timeline-content">
+                                <strong>Prototype</strong>
+                                <p>Reached 10,000+ active designers across 80+ countries</p>
+                            </div>
+                        </div>
+                    </div>
+                                            <div class="timeline-item">
+                            <div class="timeline-marker"></div>
+                            <div class="timeline-content">
+                                <strong>Test</strong>
+                                <p>Reached 10,000+ active designers across 80+ countries</p>
+                            </div>
+                        </div>
+                        </div>
+                                                <div class="timeline-item">
+                            <div class="timeline-marker"></div>
+                            <div class="timeline-content">
+                                <strong>Share</strong>
+                                <p>Reached 10,000+ active designers across 80+ countries</p>
+                            </div>
+                        </div>
+                        </div>
 </section>
 
-<section class="features" id="use-cases">
-    <h2>Built for mobile-first UI/UX design</h2>
-    <div class="features-grid">
-        <div class="feature-card card-purple">
-            <div class="feature-icon">
-                <i data-lucide="cloud"></i>
-            </div>
-            <h3>Runs fully online</h3>
-            <p>No installation. Works on phones, tablets, and low-end devices.</p>
-            <div class="feature-tags">
-                <span class="tag"><i data-lucide="check"></i> Zero install</span>
-                <span class="tag"><i data-lucide="check"></i> Works offline</span>
-            </div>
-        </div>
-        <div class="feature-card card-blue">
-            <div class="feature-icon">
-                <i data-lucide="hand"></i>
-            </div>
-            <h3>Touch-optimized editor</h3>
-            <p>Designed for fingers — not just mouse and keyboard.</p>
-            <div class="feature-tags">
-                <span class="tag"><i data-lucide="check"></i> Gesture support</span>
-                <span class="tag"><i data-lucide="check"></i> Mobile UI</span>
-            </div>
-        </div>
-        <div class="feature-card card-green">
-            <div class="feature-icon">
-                <i data-lucide="heart"></i>
-            </div>
-            <h3>Free to use</h3>
-            <p>Start designing without payment or downloads.</p>
-            <div class="feature-tags">
-                <span class="tag"><i data-lucide="check"></i> No credit card</span>
-                <span class="tag"><i data-lucide="check"></i> Unlimited projects</span>
-            </div>
-        </div>
-    </div>
-</section>
+
 
 <section class="how-it-works">
     <h2>How it works</h2>
