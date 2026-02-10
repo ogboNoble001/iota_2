@@ -215,8 +215,8 @@
 <style>
 
   .presentation-container {
-    width: 100vw;
-    margin: 2em 0;
+    width: 100%;
+    margin: 2em auto;
     height: 300px;
     position: relative;
     overflow: visible;
@@ -260,7 +260,7 @@
     justify-content: center;
     transition: background 0.2s;
   }
-  .nav-btn:hover { background: rgba(255,255,255,0.28); }
+
   .nav-btn svg {
     width: 16px; height: 16px;
     stroke: white; stroke-width: 2.5; fill: none;
@@ -322,7 +322,7 @@
     content: '';
     position: absolute;
     inset: 0;
-    border-radius: 18px;
+
     background: linear-gradient(
       to top,
       rgba(0,0,0,0.75) 0%,
@@ -717,8 +717,8 @@ document.addEventListener('DOMContentLoaded', ()=>{
     </div>
 </section>
 
-
-<div class="presentation-container">
+<div class="daddyCarousel">
+    <div class="presentation-container">
 
   <div class="slide-counter">
     <span id="currentSlide">1</span> / <span id="totalSlides">10</span>
@@ -754,11 +754,14 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
 </div>
 
+</div>
+
 
 <section class="cta-section">
     <div class="cta-content">
         <h2>Ready to design your mobile app?</h2>
-        <p>Join thousands of designers creating beautiful mobile UIs every day.</p>
+        <br />
+        <p>Join thousands of <u>designers</u>  creating beautiful <u>mobile UIs</u> every day.</p>
         <div class="cta-buttons">
             <a href="#" class="btn-primary btn-large">
                 <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>

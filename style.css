@@ -203,8 +203,8 @@ nav.scrolled {
 black 60%
 );
 mask-image: radial-gradient(ellipse 100% 100% at 50% 50%,
-    transparent 10%,
-    black 60%
+    transparent 90%,
+    black 90%
 );
     pointer-events: none;
     z-index: 0;
@@ -766,11 +766,10 @@ mask-image: radial-gradient(ellipse 100% 100% at 50% 50%,
 
 .step-card {
     position: relative;
-    background: ghostwhite;
+    background: #EFF3FF;
     padding: 3rem 2rem;
     border-radius: 16px;
-    background: 
-        radial-gradient(circle, rgba(0, 0, 0, 0.05) 1.5px, transparent 4.5px);
+    
     background-size: 30px 30px;
     background-position: 0 0;
     background-attachment: scroll;
@@ -920,16 +919,40 @@ mask-image: radial-gradient(ellipse 100% 100% at 50% 50%,
 }
 
 /* CTA Section */
-.cta-section {
+.cta-section{
     padding: 6rem 2rem;
-    background: linear-gradient(135deg, var(--primary) 0%, var(--purple) 50%, var(--pink) 100%);
-    color: white;
-    text-align: center;
+
+color: black;
+text-align: center;
+}
+
+
+.cta-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(to right, rgba(0, 0, 0, 0.06) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(0, 0, 0, 0.06) 1px, transparent 1px);
+    background-size: 30px 30px;
+-webkit-mask-image: radial-gradient(ellipse 100% 100% at 50% 50%,
+    transparent 10%,
+black 60%
+);
+mask-image: radial-gradient(ellipse 100% 100% at 50% 50%,
+    transparent 30%,
+    black 60%
+);
+    pointer-events: none;
+    z-index: 0;
 }
 
 .cta-content h2 {
     font-size: 3rem;
     margin-bottom: 1rem;
+    font-style: italic;
+    font-weight: 300;
+    font-family: "Instrument serif";
 }
 
 .cta-content p {
@@ -947,7 +970,18 @@ mask-image: radial-gradient(ellipse 100% 100% at 50% 50%,
 
 .cta-section .btn-primary {
     background: ghostwhite;
+    position: relative;
     color: var(--primary);
+}
+.cta-section .btn-primary{
+    background: rgba(255, 255, 255, 0.15); /* semi-transparent */
+  backdrop-filter: blur(10px); /* blurs background behind */
+  -webkit-backdrop-filter: blur(10px); /* Safari support */
+  border-radius: 16px; /* rounded corners */
+  border: 1px solid rgba(255, 255, 255, 0.3); /* subtle frosted border */
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); /* soft shadow for depth */
+  padding: 1rem;
+  color: var(--primary); /* text color, adjust depending on background */
 }
 
 .cta-section .btn-primary:hover {
@@ -956,9 +990,14 @@ mask-image: radial-gradient(ellipse 100% 100% at 50% 50%,
 }
 
 .cta-section .btn-secondary {
-    background: transparent;
-    color: white;
-    border-color: white;
+    background: rgba(255, 255, 255, 0.15); /* semi-transparent */
+  backdrop-filter: blur(10px); /* blurs background behind */
+  -webkit-backdrop-filter: blur(10px); /* Safari support */
+  border-radius: 16px; /* rounded corners */
+  border: 1px solid rgba(255, 255, 255, 0.3); /* subtle frosted border */
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); /* soft shadow for depth */
+  padding: 1rem;
+  color: var(--primary); /* text color, adjust depending on background */
 }
 
 .cta-section .btn-secondary:hover {
@@ -1187,5 +1226,7 @@ footer {
         grid-template-columns: 1fr;
     }
 }
-
-
+.daddyCarousel{
+    position: relative;
+    left: -2.3em;
+}
