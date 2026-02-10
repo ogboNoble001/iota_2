@@ -1228,5 +1228,6 @@ footer {
 }
 .daddyCarousel{
     position: relative;
-    left: -2.3em;
+    
+    width: 100%;
 }
