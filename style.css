@@ -180,45 +180,47 @@ nav.scrolled {
 
 /* Hero Section */
 .hero {
-    margin-top: 80px;
+    margin-top: 55px;
     margin-left: auto;
     margin-right: auto;
     padding: 6rem 2rem 4rem;
     text-align: center;
-    background: ghostwhite;
     max-width: 760px;
     width: 100%;
-    background: 
-        radial-gradient(circle, rgba(0, 0, 0, 0.05) 1.5px, transparent 4.5px);
+    position: relative;
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(to right, rgba(0, 0, 0, 0.06) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(0, 0, 0, 0.06) 1px, transparent 1px);
     background-size: 30px 30px;
-    background-position: 0 0;
-    background-attachment: scroll;
+-webkit-mask-image: radial-gradient(ellipse 100% 100% at 50% 50%,
+    transparent 10%,
+black 60%
+);
+mask-image: radial-gradient(ellipse 100% 100% at 50% 50%,
+    transparent 10%,
+    black 60%
+);
+    pointer-events: none;
+    z-index: 0;
 }
-
-.hero-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    background: linear-gradient(135deg, var(--purple-light), var(--pink-light));
-    color: white;
-    padding: 0.5rem 1.5rem;
-    border-radius: 50px;
-    font-weight: 600;
-    font-size: 0.9rem;
-    margin-bottom: 2rem;
-    animation: float 3s ease-in-out infinite;
+/* Glow layer */
+.hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 60% 50% at 50% 50%,
+        rgba(99, 102, 241, 0.15) 0%,
+        transparent 70%
+      );
+    pointer-events: none;
+    z-index: 0;
 }
-
-.hero-badge i {
-    width: 16px;
-    height: 16px;
-}
-
-@keyframes float {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
-}
-
 .hero h1 {
     font-size: 4rem;
     font-weight: 800;
@@ -226,7 +228,13 @@ nav.scrolled {
     
     line-height: 1.2;
 }
-
+.hero-cta {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
 .hero p {
     font-size: 1.5rem;
     color: var(--text-light);
@@ -236,14 +244,10 @@ nav.scrolled {
     margin-right: auto;
 }
 
-.hero-cta {
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
+.hero > * {
+    position: relative;
+    z-index: 1;
 }
-
 
 /* Carousel */
 .carousel {
@@ -780,17 +784,17 @@ nav.scrolled {
 
 .step-number{
     position: absolute;
-    top: -.2em;
+    top: -.06em;
     left: 50%;
     transform: translateX(-50%);
-    font-size: 260px;
-    opacity: .09;
+    font-size: 90px;
+    opacity: .2;
     color: grey;
    font-family: "Instrument seeif", serif;
     font-weight: 300;
 }
 
-
+/*
 
 .step-icon {
     width: 64px;
@@ -799,10 +803,9 @@ nav.scrolled {
     justify-content: center;
     align-items: center;
     margin: 1rem auto;
-    color: ghostwhite;
-    background-color: color-mix(in srgb, #008080 70%, white);
+    color: wheat;
 }
-
+*/
 .step-card h3 {
     font-size: 1.3rem;
     margin-bottom: 0.5rem;
