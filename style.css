@@ -4,7 +4,10 @@
     
     box-sizing: border-box;
 }
-
+*::selection{
+    background-color: white;
+    color: #4f46e5;
+}
 :root {
     --primary: #6366f1;
     --primary-dark: #4f46e5;
@@ -72,11 +75,10 @@ nav.scrolled {
 
 .logo {
     font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--primary);
+    font-weight: 500;
     display: flex;
+    position: relative;
     align-items: center;
-    gap: 0.5rem;
 }
 
 .logo-icon {
