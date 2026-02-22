@@ -37,6 +37,7 @@
 }
 
 body {
+    position: relative;
     color: var(--text-dark);
     background-color: ghostwhite;
     line-height: 1.6;
