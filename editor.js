@@ -897,6 +897,7 @@ document.getElementById('new-confirm').addEventListener('click', () => {
   elements = []; selected = null;
   camera   = { x: 0, y: 0, scale: 1 };
   undoStack = []; redoStack = [];
+  currentProjectId = null;
   updatePanel();
   document.getElementById('new-dialog').classList.add('hidden');
 });
@@ -1645,14 +1646,14 @@ document.getElementById('btn-save-project').addEventListener('click', () => {
 });
 
 // Save Name Dialog
-function openSaveNameDialog(overwrite = false) {
+function openSaveNameDialog() {
   const projects = getAllProjects();
-  const existing = projects.find(p => p.id === currentProjectId);
+  const existing = currentProjectId ? projects.find(p => p.id === currentProjectId) : null;
   const input    = document.getElementById('savename-input');
   input.value    = existing ? existing.name : '';
   input.placeholder = 'My Project…';
   document.getElementById('savename-dialog').classList.remove('hidden');
-  setTimeout(() => input.focus(), 50);
+  setTimeout(() => { input.focus(); input.select(); }, 50);
 }
 
 document.getElementById('savename-close').addEventListener('click', () => {
