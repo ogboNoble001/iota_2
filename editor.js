@@ -809,12 +809,13 @@ function saveUndo() {
 }
 
 function restoreFromSerial(serial) {
-  const s  = JSON.parse(serial);
-  // Re-attach images
-  const imgMap = {};
-  elements.forEach(e => { if (e._img) imgMap[e.id] = e._img; });
+  const s = JSON.parse(serial);
   elements = s.els.map(e => {
-    if (imgMap[e.id]) e._img = imgMap[e.id];
+    if (e.type === 'image' && e._imgSrc) {
+      const img = new Image();
+      img.src = e._imgSrc;
+      e._img = img;
+    }
     return e;
   });
   selected = elements.find(e => e.id === s.sid) || null;
@@ -1471,7 +1472,12 @@ function generateThumb(projectElements) {
 
 function saveCurrentProject(name) {
   const projects = getAllProjects();
-  const serial   = elements.map(e => { const c = { ...e }; delete c._img; return c; });
+  const serial = elements.map(e => {
+  const c = { ...e };
+  if (e._img && e._img.src) c._imgSrc = e._img.src;
+  delete c._img;
+  return c;
+});
   const thumb    = generateThumb(serial);
   const now      = new Date();
 
@@ -1513,16 +1519,17 @@ function loadProject(id) {
   if (!project) return;
 
   elements         = project.elements;
-  currentProjectId = project.id;
-  selected         = null;
+  ccurrentProjectId = project.id;
+selected = null;
 
-  // Re-attach any image elements as placeholder
-  elements.forEach(el => {
-    if (el.type === 'image' && !el._img) {
-      // Image data not available after reload — mark as broken
-      el._imgBroken = true;
-    }
-  });
+elements = project.elements.map(el => {
+  if (el.type === 'image' && el._imgSrc) {
+    const img = new Image();
+    img.src = el._imgSrc;
+    el._img = img;
+  }
+  return el;
+});
 
   updatePanel();
   fitAll();
