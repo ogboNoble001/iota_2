@@ -5,6 +5,8 @@
 const canvas  = document.getElementById('canvas');
 const ctx     = canvas.getContext('2d');
 const area    = document.getElementById('canvas-area');
+let aspectLocked   = false;
+let aspectRatio    = null;
 
 // ── Engine State ───────────────────────────────────────────────
 let elements    = [];
@@ -1048,16 +1050,72 @@ function bindPropInput(id, apply) {
 
 function applyDesignProps() {
   if (!selected) return;
-  selected.x        = parseFloat(document.getElementById('prop-x').value) || selected.x;
-  selected.y        = parseFloat(document.getElementById('prop-y').value) || selected.y;
-  selected.w        = Math.max(1, parseFloat(document.getElementById('prop-w').value) || selected.w);
-  selected.h        = Math.max(1, parseFloat(document.getElementById('prop-h').value) || selected.h);
+  
+  const newX = parseFloat(document.getElementById('prop-x').value);
+  const newY = parseFloat(document.getElementById('prop-y').value);
+  let newW = parseFloat(document.getElementById('prop-w').value);
+  let newH = parseFloat(document.getElementById('prop-h').value);
+  const minW = parseFloat(document.getElementById('prop-minw').value) || 0;
+  const minH = parseFloat(document.getElementById('prop-minh').value) || 0;
+  const maxW = parseFloat(document.getElementById('prop-maxw').value) || Infinity;
+  const maxH = parseFloat(document.getElementById('prop-maxh').value) || Infinity;
+  
+  // Aspect constraint
+  const aspect = document.getElementById('prop-aspect').value;
+  if (aspect === 'lock' && aspectRatio) {
+    newH = newW / aspectRatio;
+  } else if (aspect === '1:1') {
+    newH = newW;
+  } else if (aspect === '16:9') {
+    newH = newW * (9 / 16);
+  } else if (aspect === '4:3') {
+    newH = newW * (3 / 4);
+  } else if (aspect === '3:2') {
+    newH = newW * (2 / 3);
+  } else if (aspect === '9:16') {
+    newH = newW * (16 / 9);
+  }
+  
+  // Clamp to min/max
+  newW = Math.max(minW || 1, Math.min(maxW, newW || selected.w));
+  newH = Math.max(minH || 1, Math.min(maxH, newH || selected.h));
+  
+  if (!isNaN(newX)) selected.x = newX;
+  if (!isNaN(newY)) selected.y = newY;
+  selected.w = newW;
+  selected.h = newH;
   selected.rotation = (parseFloat(document.getElementById('prop-rot').value) || 0) * Math.PI / 180;
-  selected.radius   = parseFloat(document.getElementById('prop-radius').value) || 0;
+  selected.radius = parseFloat(document.getElementById('prop-radius').value) || 0;
+  
+  updatePreview();
 }
 
 ['prop-x','prop-y','prop-w','prop-h','prop-rot','prop-radius'].forEach(id => {
   bindPropInput(id, applyDesignProps);
+});
+
+document.getElementById('prop-scale').addEventListener('change', () => {
+  if (!selected) return;
+  if (!selected._origW) { selected._origW = selected.w; selected._origH = selected.h; }
+  const pct = parseFloat(document.getElementById('prop-scale').value) / 100 || 1;
+  selected.w = selected._origW * pct;
+  selected.h = selected._origH * pct;
+  updatePanel();
+});
+
+document.getElementById('btn-replace-image').addEventListener('click', () => {
+  document.getElementById('image-input').click();
+});
+
+document.getElementById('image-fit').addEventListener('change', () => {
+  if (!selected || selected.type !== 'image') return;
+  selected.imageFit = document.getElementById('image-fit').value;
+});
+
+document.getElementById('image-opacity').addEventListener('change', () => {
+  if (!selected || selected.type !== 'image') return;
+  selected.fillOpacity = parseFloat(document.getElementById('image-opacity').value) || 100;
+  updatePanel();
 });
 
 // Fill
@@ -1115,6 +1173,71 @@ document.getElementById('stroke-style').addEventListener('change', () => {
   });
 });
 
+function updatePreview() {
+  const pc     = document.getElementById('preview-canvas');
+  const empty  = document.getElementById('preview-empty');
+  const wrap   = document.getElementById('preview-wrap');
+  const meta   = document.getElementById('preview-meta');
+  const imgSec = document.getElementById('sec-image');
+
+  if (!selected) {
+    empty.style.display  = '';
+    wrap.style.display   = 'none';
+    imgSec.style.display = 'none';
+    return;
+  }
+
+  empty.style.display = 'none';
+  wrap.style.display  = '';
+
+  const pctx = pc.getContext('2d');
+  const pw   = pc.width  = 236;
+  const ph   = pc.height = 160;
+
+  // Checkerboard background
+  for (let xi = 0; xi < pw; xi += 10)
+    for (let yi = 0; yi < ph; yi += 10) {
+      pctx.fillStyle = (xi/10 + yi/10) % 2 === 0 ? '#f5f4f2' : '#eceae6';
+      pctx.fillRect(xi, yi, 10, 10);
+    }
+
+  // Fit element into preview box
+  const pad = 20;
+  const sc  = Math.min((pw - pad*2) / selected.w, (ph - pad*2) / selected.h, 2);
+  const ox  = (pw - selected.w * sc) / 2;
+  const oy  = (ph - selected.h * sc) / 2;
+
+  pctx.save();
+  pctx.translate(ox + (selected.w * sc) / 2, oy + (selected.h * sc) / 2);
+  pctx.rotate(selected.rotation);
+  pctx.scale(sc, sc);
+  pctx.translate(-selected.w / 2, -selected.h / 2);
+  pctx.globalAlpha = selected.fillOpacity / 100;
+  drawElement(pctx, { ...selected, x: 0, y: 0 });
+  pctx.globalAlpha = 1;
+  pctx.restore();
+
+  // Meta tags
+  meta.innerHTML = `
+    <span class="preview-tag">${Math.round(selected.w)} × ${Math.round(selected.h)}</span>
+    <span class="preview-tag">${selected.type}</span>
+    <span class="preview-tag">${Math.round(selected.rotation * 180 / Math.PI)}°</span>
+    ${selected.fillOpacity < 100 ? `<span class="preview-tag">${selected.fillOpacity}% opacity</span>` : ''}
+  `;
+
+  // Image panel
+  const isImg = selected.type === 'image';
+  imgSec.style.display = isImg ? '' : 'none';
+  if (isImg && selected._img) {
+    document.getElementById('image-preview-img').src          = selected._img.src;
+    document.getElementById('image-preview-img').style.objectFit = selected.imageFit || 'cover';
+    document.getElementById('image-preview-info').textContent =
+      `${selected._img.naturalWidth} × ${selected._img.naturalHeight}px  ·  ${Math.round(selected.w)} × ${Math.round(selected.h)} on canvas`;
+    document.getElementById('image-fit').value     = selected.imageFit || 'cover';
+    document.getElementById('image-opacity').value = selected.fillOpacity;
+  }
+}
+
 // ── Panel Update ───────────────────────────────────────────────
 function updatePanel() {
   const el  = selected;
@@ -1152,6 +1275,18 @@ function updatePanel() {
     document.getElementById('stroke-style').disabled             = false;
     document.getElementById('stroke-style').value                = el.strokeStyle || 'solid';
 
+// Enable dimension controls
+document.getElementById('prop-minw').disabled   = false;
+document.getElementById('prop-minh').disabled   = false;
+document.getElementById('prop-maxw').disabled   = false;
+document.getElementById('prop-maxh').disabled   = false;
+document.getElementById('prop-aspect').disabled = false;
+document.getElementById('prop-scale').disabled  = false;
+document.getElementById('prop-scale').value     = 100;
+
+// Store aspect ratio when selection changes
+aspectRatio = el.w / el.h;
+
     // Text section
     const isText = el.type === 'text';
     document.getElementById('sec-text').style.display = isText ? '' : 'none';
@@ -1173,12 +1308,22 @@ function updatePanel() {
     document.getElementById('stroke-style').disabled   = true;
     document.getElementById('sec-text').style.display  = 'none';
     document.getElementById('status-selected').textContent = 'No selection';
+    document.getElementById('prop-minw').disabled   = true;
+document.getElementById('prop-minh').disabled   = true;
+document.getElementById('prop-maxw').disabled   = true;
+document.getElementById('prop-maxh').disabled   = true;
+document.getElementById('prop-aspect').disabled = true;
+document.getElementById('prop-scale').disabled  = true;
   }
 
   updateLayers();
   document.getElementById('elem-count').textContent =
     elements.length + ' object' + (elements.length === 1 ? '' : 's');
+    
+    updatePreview()
 }
+
+
 
 // ── Layers ─────────────────────────────────────────────────────
 const TYPE_ICONS = {

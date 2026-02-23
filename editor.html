@@ -324,6 +324,45 @@
                 <input class="prop-input" id="prop-radius" type="number" step="1" min="0" disabled placeholder="0" />
               </div>
             </div>
+            <!-- Add this inside the design sec-body after the W/H prop-row -->
+<div class="prop-row">
+  <div class="prop-field">
+    <div class="prop-label">Min W</div>
+    <input class="prop-input" id="prop-minw" type="number" step="1" min="0" disabled placeholder="—" />
+  </div>
+  <div class="prop-field">
+    <div class="prop-label">Min H</div>
+    <input class="prop-input" id="prop-minh" type="number" step="1" min="0" disabled placeholder="—" />
+  </div>
+</div>
+<div class="prop-row">
+  <div class="prop-field">
+    <div class="prop-label">Max W</div>
+    <input class="prop-input" id="prop-maxw" type="number" step="1" min="0" disabled placeholder="—" />
+  </div>
+  <div class="prop-field">
+    <div class="prop-label">Max H</div>
+    <input class="prop-input" id="prop-maxh" type="number" step="1" min="0" disabled placeholder="—" />
+  </div>
+</div>
+<div class="prop-row">
+  <div class="prop-field">
+    <div class="prop-label">Aspect</div>
+    <select class="prop-input" id="prop-aspect" disabled>
+      <option value="free">Free</option>
+      <option value="lock">Locked</option>
+      <option value="1:1">1 : 1</option>
+      <option value="16:9">16 : 9</option>
+      <option value="4:3">4 : 3</option>
+      <option value="3:2">3 : 2</option>
+      <option value="9:16">9 : 16</option>
+    </select>
+  </div>
+  <div class="prop-field">
+    <div class="prop-label">Scale %</div>
+    <input class="prop-input" id="prop-scale" type="number" step="1" min="1" max="1000" disabled placeholder="100" />
+  </div>
+</div>
           </div>
         </div>
 
@@ -428,6 +467,56 @@
             </div>
           </div>
         </div>
+
+<!-- Preview section -->
+<div class="panel-section" id="sec-preview">
+  <div class="sec-header" data-section="preview">
+    PREVIEW
+    <svg class="sec-arrow open" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+  </div>
+  <div class="sec-body" id="body-preview">
+    <div class="preview-empty" id="preview-empty">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+      <p>Select an element<br/>to preview it</p>
+    </div>
+    <div class="preview-wrap" id="preview-wrap" style="display:none">
+      <canvas id="preview-canvas" width="236" height="160"></canvas>
+      <div class="preview-meta" id="preview-meta"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Image section -->
+<div class="panel-section" id="sec-image" style="display:none">
+  <div class="sec-header" data-section="image">
+    IMAGE
+    <svg class="sec-arrow open" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+  </div>
+  <div class="sec-body" id="body-image">
+    <div class="image-preview-wrap" id="image-preview-wrap">
+      <img id="image-preview-img" src="" alt="preview" />
+      <div class="image-preview-info" id="image-preview-info"></div>
+    </div>
+    <div class="prop-row">
+      <div class="prop-field">
+        <div class="prop-label">Fit</div>
+        <select class="prop-input" id="image-fit">
+          <option value="fill">Fill</option>
+          <option value="contain">Contain</option>
+          <option value="cover">Cover</option>
+        </select>
+      </div>
+      <div class="prop-field">
+        <div class="prop-label">Opacity</div>
+        <input class="prop-input" id="image-opacity" type="number" min="0" max="100" value="100" />
+      </div>
+    </div>
+    <button class="btn-replace" id="btn-replace-image">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Replace Image
+    </button>
+  </div>
+</div>
 
         <!-- Layers section -->
         <div class="panel-section" id="sec-layers">
