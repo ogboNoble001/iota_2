@@ -650,13 +650,8 @@ canvas.addEventListener('contextmenu', e => {
   }
 });
 
-document.addEventListener('pointerdown', e => {
-  if (!e.target.closest('#ctx-menu')) hideCtxMenu();
-});
 
-function hideCtxMenu() {
-  document.getElementById('ctx-menu').style.display = 'none';
-}
+
 
 document.getElementById('ctx-front').addEventListener('click', () => {
   if (!selected) return;

@@ -36,7 +36,7 @@ input, select {
   position: fixed;
   inset: 0;
   z-index: 9999;
-  background: #1a1917;
+  background: ghostwhite;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -65,8 +65,8 @@ input, select {
 .splash-logo-mark {
   width: 64px;
   height: 64px;
-  background: #2d2c2a;
-  border-radius: 16px;
+  background: #6366F196;
+  border-radius: 08px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -75,7 +75,7 @@ input, select {
 .splash-name {
   font-size: 22px;
   font-weight: 600;
-  color: #ffffff;
+  color: #1a1917;
   letter-spacing: -0.5px;
 }
 
@@ -170,7 +170,7 @@ input, select {
 .logo-mark {
   width: 26px;
   height: 26px;
-  background: #1a1917;
+  background: #6366f1;
   border-radius: 6px;
   display: flex;
   align-items: center;
@@ -806,13 +806,15 @@ input, select {
 ───────────────────────────────────────────── */
 #ctx-menu {
   position: fixed;
-  background: #ffffff;
+  bottom: 2em;
+  right: 2em;
   border: 1px solid #e2dfd9;
   border-radius: 8px;
+  background-color: ghostwhite;
   box-shadow: 0 12px 32px rgba(0,0,0,0.10), 0 4px 8px rgba(0,0,0,0.05);
   padding: 4px;
   z-index: 9990;
-  display: none;
+  display: block;
   min-width: 168px;
   animation: ctxFade 0.1s ease forwards;
 }
