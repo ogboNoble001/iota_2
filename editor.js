@@ -18,6 +18,10 @@ let redoStack   = [];
 let showGrid    = true;
 let idCounter   = 1;
 
+// ── Project Storage ────────────────────────────────────────────
+const STORAGE_KEY = 'canvas_projects';
+let   currentProjectId = null;
+
 // Drawing
 let drawing          = false;
 let drawPreviewState = null;
@@ -1406,5 +1410,279 @@ function init() {
   setTool('select');
   render();
 }
+// ═══════════════════════════════════════════════════════════════
+//  PROJECT SAVE / LOAD
+// ═══════════════════════════════════════════════════════════════
 
+// ═══════════════════════════════════════════════════════════════
+//  PROJECT SAVE / LOAD
+// ═══════════════════════════════════════════════════════════════
+
+function getAllProjects() {
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+  } catch { return []; }
+}
+
+function saveProjects(projects) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
+}
+
+function generateThumb(projectElements) {
+  const tmp  = document.createElement('canvas');
+  tmp.width  = 300;
+  tmp.height = 200;
+  const tc   = tmp.getContext('2d');
+
+  tc.fillStyle = '#f5f4f2';
+  tc.fillRect(0, 0, 300, 200);
+
+  if (!projectElements.length) return tmp.toDataURL();
+
+  const xs = projectElements.flatMap(e => [e.x, e.x + e.w]);
+  const ys = projectElements.flatMap(e => [e.y, e.y + e.h]);
+  const mx = Math.min(...xs), my = Math.min(...ys);
+  const mw = Math.max(...xs) - mx, mh = Math.max(...ys) - my;
+
+  const pad = 20;
+  const sc  = Math.min((300 - pad*2) / mw, (200 - pad*2) / mh, 2);
+  const ox  = (300 - mw * sc) / 2 - mx * sc;
+  const oy  = (200 - mh * sc) / 2 - my * sc;
+
+  tc.save();
+  tc.translate(ox, oy);
+  tc.scale(sc, sc);
+
+  projectElements.forEach(el => {
+    if (!el.visible) return;
+    // Skip images in thumbnail (no _img reference in serialized data)
+    if (el.type === 'image') {
+      tc.fillStyle = '#e2dfd9';
+      tc.fillRect(el.x, el.y, el.w, el.h);
+      return;
+    }
+    drawElement(tc, el);
+  });
+
+  tc.restore();
+  return tmp.toDataURL();
+}
+
+function saveCurrentProject(name) {
+  const projects = getAllProjects();
+  const serial   = elements.map(e => { const c = { ...e }; delete c._img; return c; });
+  const thumb    = generateThumb(serial);
+  const now      = new Date();
+
+  if (currentProjectId) {
+    // Overwrite existing
+    const idx = projects.findIndex(p => p.id === currentProjectId);
+    if (idx !== -1) {
+      projects[idx].elements  = serial;
+      projects[idx].thumb     = thumb;
+      projects[idx].updatedAt = now.toISOString();
+      projects[idx].name      = name || projects[idx].name;
+      saveProjects(projects);
+      showToast(`"${projects[idx].name}" saved`);
+      renderProjectsGrid();
+      return;
+    }
+  }
+
+  // New project
+  const project = {
+    id:        Date.now().toString(),
+    name:      name || 'Untitled Project',
+    elements:  serial,
+    thumb,
+    createdAt: now.toISOString(),
+    updatedAt: now.toISOString()
+  };
+
+  projects.unshift(project);
+  saveProjects(projects);
+  currentProjectId = project.id;
+  showToast(`"${project.name}" saved`);
+  renderProjectsGrid();
+}
+
+function loadProject(id) {
+  const projects = getAllProjects();
+  const project  = projects.find(p => p.id === id);
+  if (!project) return;
+
+  elements         = project.elements;
+  currentProjectId = project.id;
+  selected         = null;
+
+  // Re-attach any image elements as placeholder
+  elements.forEach(el => {
+    if (el.type === 'image' && !el._img) {
+      // Image data not available after reload — mark as broken
+      el._imgBroken = true;
+    }
+  });
+
+  updatePanel();
+  fitAll();
+  document.getElementById('projects-dialog').classList.add('hidden');
+  showToast(`"${project.name}" loaded`);
+}
+
+function deleteProject(id) {
+  let projects = getAllProjects();
+  const proj   = projects.find(p => p.id === id);
+  projects     = projects.filter(p => p.id !== id);
+  saveProjects(projects);
+  if (currentProjectId === id) currentProjectId = null;
+  showToast(`"${proj?.name || 'Project'}" deleted`);
+  renderProjectsGrid();
+}
+
+
+function renderProjectsGrid() {
+  const grid    = document.getElementById('projects-grid');
+  const search  = document.getElementById('projects-search').value.toLowerCase();
+  let projects  = getAllProjects();
+
+  if (search) {
+    projects = projects.filter(p => p.name.toLowerCase().includes(search));
+  }
+
+  if (!projects.length) {
+    grid.innerHTML = `
+      <div class="projects-empty">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+        <p>No saved projects yet.<br/>Save your current canvas to get started.</p>
+      </div>
+    `;
+    return;
+  }
+
+  if (!projects.length) {
+    grid.innerHTML = '';
+    grid.appendChild(empty);
+    empty.style.display = '';
+    return;
+  }
+
+  
+
+  grid.innerHTML = projects.map(p => {
+    const date    = new Date(p.updatedAt);
+    const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    const count   = p.elements?.length || 0;
+    const active  = p.id === currentProjectId ? 'style="border-color:#2563eb;"' : '';
+
+    return `
+      <div class="project-card" data-id="${p.id}" ${active}>
+        <img class="project-thumb" src="${p.thumb}" alt="${p.name}" />
+        <div class="project-info">
+          <div class="project-name" title="${p.name}">${p.name}</div>
+          <div class="project-date">${dateStr}</div>
+          <div class="project-count">${count} object${count === 1 ? '' : 's'}</div>
+        </div>
+        <div class="project-actions">
+          <button class="project-action-btn load" data-load="${p.id}" title="Load">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 12 5 19 12"/><line x1="12" y1="5" x2="12" y2="19"/></svg>
+          </button>
+          <button class="project-action-btn del" data-del="${p.id}" title="Delete">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  // Events
+  grid.querySelectorAll('.project-card').forEach(card => {
+    card.addEventListener('dblclick', () => loadProject(card.dataset.id));
+  });
+  grid.querySelectorAll('[data-load]').forEach(btn => {
+    btn.addEventListener('click', e => { e.stopPropagation(); loadProject(btn.dataset.load); });
+  });
+  grid.querySelectorAll('[data-del]').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      if (confirm('Delete this project? This cannot be undone.')) {
+        deleteProject(btn.dataset.del);
+      }
+    });
+  });
+}
+
+// ── Toast ──────────────────────────────────────────────────────
+let toastTimer = null;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ── Projects Dialog Wiring ─────────────────────────────────────
+document.getElementById('btn-projects').addEventListener('click', () => {
+  renderProjectsGrid();
+  document.getElementById('projects-dialog').classList.remove('hidden');
+});
+
+document.getElementById('projects-close').addEventListener('click', () => {
+  document.getElementById('projects-dialog').classList.add('hidden');
+});
+
+document.getElementById('projects-dialog').addEventListener('pointerdown', e => {
+  if (e.target === document.getElementById('projects-dialog'))
+    document.getElementById('projects-dialog').classList.add('hidden');
+});
+
+document.getElementById('projects-search').addEventListener('input', renderProjectsGrid);
+
+// Save Current button inside dialog
+document.getElementById('btn-save-project').addEventListener('click', () => {
+  document.getElementById('projects-dialog').classList.add('hidden');
+  openSaveNameDialog();
+});
+
+// Save Name Dialog
+function openSaveNameDialog(overwrite = false) {
+  const projects = getAllProjects();
+  const existing = projects.find(p => p.id === currentProjectId);
+  const input    = document.getElementById('savename-input');
+  input.value    = existing ? existing.name : '';
+  input.placeholder = 'My Project…';
+  document.getElementById('savename-dialog').classList.remove('hidden');
+  setTimeout(() => input.focus(), 50);
+}
+
+document.getElementById('savename-close').addEventListener('click', () => {
+  document.getElementById('savename-dialog').classList.add('hidden');
+});
+document.getElementById('savename-cancel').addEventListener('click', () => {
+  document.getElementById('savename-dialog').classList.add('hidden');
+});
+document.getElementById('savename-confirm').addEventListener('click', () => {
+  const name = document.getElementById('savename-input').value.trim() || 'Untitled Project';
+  document.getElementById('savename-dialog').classList.add('hidden');
+  saveCurrentProject(name);
+});
+document.getElementById('savename-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('savename-confirm').click();
+});
+
+// Keyboard shortcut Ctrl+S
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+    e.preventDefault();
+    const projects = getAllProjects();
+    const existing = projects.find(p => p.id === currentProjectId);
+    if (existing) {
+      // Quick-save over existing
+      saveCurrentProject(existing.name);
+    } else {
+      // First time — ask for name
+      openSaveNameDialog();
+    }
+  }
+});
 init();

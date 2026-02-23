@@ -167,6 +167,10 @@
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             <span class="btn-label">Export</span>
           </button>
+          <button class="topbar-btn" id="btn-projects" title="Projects">
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+  <span class="btn-label">Projects</span>
+</button>
         </div>
 
         <div class="topbar-divider"></div>
@@ -538,7 +542,57 @@
     </aside>
 
   </div><!-- /#app -->
+<div id="projects-dialog" class="dialog-backdrop hidden">
+  <div class="dialog dialog-wide">
+    <div class="dialog-header">
+      <span class="dialog-title">Projects</span>
+      <button class="dialog-close" id="projects-close">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="dialog-body">
+      <div class="projects-toolbar">
+        <input class="projects-search" id="projects-search" type="text" placeholder="Search projects…" />
+        <button class="btn-primary" id="btn-save-project">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          Save Current
+        </button>
+      </div>
+      <div class="projects-grid" id="projects-grid">
+        <div class="projects-empty" id="projects-empty">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+          <p>No saved projects yet.<br/>Save your current canvas to get started.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
+<!-- Save Name Dialog -->
+<div id="savename-dialog" class="dialog-backdrop hidden">
+  <div class="dialog">
+    <div class="dialog-header">
+      <span class="dialog-title">Save Project</span>
+      <button class="dialog-close" id="savename-close">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="dialog-body">
+      <div class="dialog-field">
+        <label class="dialog-label">Project Name</label>
+        <input class="dialog-input" id="savename-input" type="text" placeholder="My Project…" />
+      </div>
+    </div>
+    <div class="dialog-footer">
+      <button class="btn-ghost" id="savename-cancel">Cancel</button>
+      <button class="btn-primary" id="savename-confirm">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        Save
+      </button>
+    </div>
+  </div>
+</div>
+<div id="toast"></div>
   <script src="editor.js"></script>
 </body>
 </html>
