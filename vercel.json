@@ -6,6 +6,7 @@
         ],
         "redirects": [
                 { "source": "/index.html", "destination": "/index", "permanent": true },
-                { "source": "/editor/editor.html", "destination": "/editor", "permanent": true }
+                { "source": "/editor/editor.html", "destination": "/editor", "permanent": true },
+                { "source": "/editor.html", "destination": "/editor", "permanent": true }
         ]
 }
