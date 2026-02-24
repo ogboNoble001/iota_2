@@ -1,11 +1,11 @@
 {
         "rewrites": [
                 { "source": "/", "destination": "/index.html" },
-                { "source": "/:page", "destination": "/:page.html" },
-                { "source": "/:folder/:page", "destination": "/:folder/:page.html" }
+                { "source": "/index", "destination": "/index.html" },
+                { "source": "/editor", "destination": "/editor/editor.html" }
         ],
         "redirects": [
-                { "source": "/:page.html", "destination": "/:page", "permanent": true },
-                { "source": "/:folder/:page.html", "destination": "/:folder/:page", "permanent": true }
+                { "source": "/index.html", "destination": "/index", "permanent": true },
+                { "source": "/editor/editor.html", "destination": "/editor", "permanent": true }
         ]
 }
