@@ -1408,13 +1408,13 @@ function updateLayers() {
   });
 }
 
-// ── Splash Screen ──────────────────────────────────────────────
+/* ── Splash Screen ──────────────────────────────────────────────
 window.addEventListener('load', () => {
   setTimeout(() => {
     document.getElementById('splash').classList.add('hidden');
   }, 2200);
 });
-
+*/ 
 // ── Font Dropdown Builder ──────────────────────────────────────
 // ── Font Picker ────────────────────────────────────────────────
 let fontPickerSelected = null;

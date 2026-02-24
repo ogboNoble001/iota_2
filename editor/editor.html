@@ -4,22 +4,22 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <title>Iota — Design Editor</title>
-      <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
   <link rel="stylesheet" href="editor.css" />
   <style>
-  @font-face { font-family: 'Playfair Display'; src: url('font/PlayfairDisplay-Regular.ttf') format('truetype'); font-weight: 400; }
-  @font-face { font-family: 'Playfair Display'; src: url('font/PlayfairDisplay-Bold.ttf') format('truetype'); font-weight: 700; }
-  @font-face { font-family: 'Bebas Neue'; src: url('font/BebasNeue-Regular.ttf') format('truetype'); font-weight: 400; }
-  @font-face { font-family: 'Lobster'; src: url('font/Lobster-Regular.ttf') format('truetype'); font-weight: 400; }
-  @font-face { font-family: 'Oswald'; src: url('font/Oswald-Regular.ttf') format('truetype'); font-weight: 400; }
-  @font-face { font-family: 'Oswald'; src: url('font/Oswald-Bold.ttf') format('truetype'); font-weight: 700; }
-  @font-face { font-family: 'Raleway'; src: url('font/Raleway-Regular.ttf') format('truetype'); font-weight: 400; }
-  @font-face { font-family: 'Raleway'; src: url('font/Raleway-Bold.ttf') format('truetype'); font-weight: 700; }
-</style>
+    @font-face { font-family: 'Playfair Display'; src: url('font/PlayfairDisplay-Regular.ttf') format('truetype'); font-weight: 400; }
+    @font-face { font-family: 'Playfair Display'; src: url('font/PlayfairDisplay-Bold.ttf') format('truetype'); font-weight: 700; }
+    @font-face { font-family: 'Bebas Neue'; src: url('font/BebasNeue-Regular.ttf') format('truetype'); font-weight: 400; }
+    @font-face { font-family: 'Lobster'; src: url('font/Lobster-Regular.ttf') format('truetype'); font-weight: 400; }
+    @font-face { font-family: 'Oswald'; src: url('font/Oswald-Regular.ttf') format('truetype'); font-weight: 400; }
+    @font-face { font-family: 'Oswald'; src: url('font/Oswald-Bold.ttf') format('truetype'); font-weight: 700; }
+    @font-face { font-family: 'Raleway'; src: url('font/Raleway-Regular.ttf') format('truetype'); font-weight: 400; }
+    @font-face { font-family: 'Raleway'; src: url('font/Raleway-Bold.ttf') format('truetype'); font-weight: 700; }
+  </style>
 </head>
 <body>
 
-  <!-- ── SPLASH SCREEN ── -->
+  <!-- ── SPLASH SCREEN ── 
   <div id="splash">
     <div class="splash-inner">
       <div class="splash-logo-mark">
@@ -30,12 +30,11 @@
           <rect class="sb4" x="8" y="8" width="5" height="5" rx="1" fill="white" />
         </svg>
       </div>
-
     </div>
-  </div>
+  </div> -->
 
-  <!-- ── MOBILE TOOLBAR OVERLAY (shown on small screens) ── -->
-  <div id="mobile-overlay" class="hidden"></div>
+  <!-- ── MOBILE OVERLAY ── -->
+  <div id="mobile-overlay"></div>
 
   <!-- ── CONTEXT MENU ── -->
   <div id="ctx-menu">
@@ -63,8 +62,9 @@
     </div>
   </div>
 
-  <!-- ── IMAGE UPLOAD ── -->
+  <!-- ── HIDDEN INPUTS ── -->
   <input type="file" id="image-input" accept="image/*" />
+  <input type="file" id="font-file-input" accept=".ttf,.otf,.woff,.woff2,.eot" multiple />
 
   <!-- ── EXPORT DIALOG ── -->
   <div id="export-dialog" class="dialog-backdrop hidden">
@@ -123,7 +123,7 @@
       </div>
       <div class="dialog-footer">
         <button class="btn-ghost" id="new-cancel">Cancel</button>
-        <button class="btn-danger" id="new-confirm">Clear & Start New</button>
+        <button class="btn-danger" id="new-confirm">Clear &amp; Start New</button>
       </div>
     </div>
   </div>
@@ -150,12 +150,95 @@
     </div>
   </div>
 
-  <!-- ── MAIN APP ── -->
+  <!-- ── PROJECTS DIALOG ── -->
+  <div id="projects-dialog" class="dialog-backdrop hidden">
+    <div class="dialog dialog-wide">
+      <div class="dialog-header">
+        <span class="dialog-title">Projects</span>
+        <button class="dialog-close" id="projects-close">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="dialog-body">
+        <div class="projects-toolbar">
+          <input class="projects-search" id="projects-search" type="text" placeholder="Search projects…" />
+          <button class="btn-primary" id="btn-save-project">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Save Current
+          </button>
+        </div>
+        <div class="projects-grid" id="projects-grid"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SAVE NAME DIALOG ── -->
+  <div id="savename-dialog" class="dialog-backdrop hidden">
+    <div class="dialog">
+      <div class="dialog-header">
+        <span class="dialog-title">Save Project</span>
+        <button class="dialog-close" id="savename-close">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="dialog-body">
+        <div class="dialog-field">
+          <label class="dialog-label">Project Name</label>
+          <input class="dialog-input" id="savename-input" type="text" placeholder="My Project…" />
+        </div>
+      </div>
+      <div class="dialog-footer">
+        <button class="btn-ghost" id="savename-cancel">Cancel</button>
+        <button class="btn-primary" id="savename-confirm">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          Save
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── FONT PICKER DIALOG ── -->
+  <div id="font-picker-dialog" class="dialog-backdrop hidden">
+    <div class="dialog dialog-font">
+      <div class="dialog-header">
+        <span class="dialog-title">Choose Font</span>
+        <button class="dialog-close" id="font-picker-close">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="dialog-body font-picker-body">
+        <div class="font-picker-top">
+          <input class="projects-search" id="font-search" type="text" placeholder="Search fonts…" />
+          <button class="btn-font-import" id="btn-import-font2">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Import
+          </button>
+        </div>
+        <div class="font-picker-group-label">Built-in</div>
+        <div class="font-picker-list" id="font-picker-builtin"></div>
+        <div class="font-picker-group-label" id="font-picker-imported-label" style="display:none">Imported</div>
+        <div class="font-picker-list" id="font-picker-imported"></div>
+      </div>
+      <div class="dialog-footer">
+        <button class="btn-ghost" id="font-picker-cancel">Cancel</button>
+        <button class="btn-primary" id="font-picker-confirm">Apply</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TOAST ── -->
+  <div id="toast"></div>
+
+  <!-- ════════════════════════════════════════════
+       MAIN APP
+  ════════════════════════════════════════════ -->
   <div id="app">
 
     <!-- TOPBAR -->
     <header id="topbar">
       <div class="topbar-left">
+
+        <!-- Logo -->
         <a class="logo" href="#">
           <div class="logo-mark">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
@@ -165,9 +248,9 @@
               <rect class="lb4" x="8" y="8" width="5" height="5" rx="1" fill="white"/>
             </svg>
           </div>
-
         </a>
 
+        <!-- File actions -->
         <div class="topbar-group">
           <button class="topbar-btn" id="btn-new" title="New File (Ctrl+N)">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
@@ -178,13 +261,14 @@
             <span class="btn-label">Export</span>
           </button>
           <button class="topbar-btn" id="btn-projects" title="Projects">
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
-  <span class="btn-label">Projects</span>
-</button>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+            <span class="btn-label">Projects</span>
+          </button>
         </div>
 
         <div class="topbar-divider"></div>
 
+        <!-- Undo / Redo -->
         <div class="topbar-group">
           <button class="topbar-btn" id="btn-undo" title="Undo (Ctrl+Z)">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/></svg>
@@ -196,6 +280,7 @@
 
         <div class="topbar-divider"></div>
 
+        <!-- Zoom -->
         <div class="topbar-group zoom-group">
           <button class="topbar-btn icon-only" id="btn-zoom-out" title="Zoom Out">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
@@ -205,7 +290,8 @@
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
           </button>
         </div>
-      </div>
+
+      </div><!-- /.topbar-left -->
 
       <div class="topbar-right">
         <button class="topbar-btn" id="btn-grid" title="Toggle Grid">
@@ -232,51 +318,51 @@
         <button class="topbar-btn mobile-panel-toggle" id="btn-panel-toggle" title="Properties">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="21" y1="10" x2="3" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="21" y1="18" x2="3" y2="18"/></svg>
         </button>
-      </div>
+      </div><!-- /.topbar-right -->
     </header>
 
-    <!-- TOOLBAR (LEFT) -->
+    <!-- LEFT TOOLBAR -->
     <nav id="toolbar">
       <div class="toolbar-inner">
-        <button class="tool-btn active" id="tool-select" data-tool="select" title="Select (V)">
+        <button class="tool-btn active" id="tool-select" data-tool="select">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 3 14 9-7 1-4 7Z"/></svg>
           <span class="tool-tip">Select  V</span>
         </button>
-        <button class="tool-btn" id="tool-hand" data-tool="hand" title="Hand (H)">
+        <button class="tool-btn" id="tool-hand" data-tool="hand">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"/><path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2"/><path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg>
           <span class="tool-tip">Hand  H</span>
         </button>
 
         <div class="tool-sep"></div>
 
-        <button class="tool-btn" id="tool-rect" data-tool="rect" title="Rectangle (R)">
+        <button class="tool-btn" id="tool-rect" data-tool="rect">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
           <span class="tool-tip">Rectangle  R</span>
         </button>
-        <button class="tool-btn" id="tool-ellipse" data-tool="ellipse" title="Ellipse (E)">
+        <button class="tool-btn" id="tool-ellipse" data-tool="ellipse">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="12" rx="10" ry="10"/></svg>
           <span class="tool-tip">Ellipse  E</span>
         </button>
-        <button class="tool-btn" id="tool-line" data-tool="line" title="Line (L)">
+        <button class="tool-btn" id="tool-line" data-tool="line">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="19" x2="19" y2="5"/></svg>
           <span class="tool-tip">Line  L</span>
         </button>
-        <button class="tool-btn" id="tool-triangle" data-tool="triangle" title="Triangle">
+        <button class="tool-btn" id="tool-triangle" data-tool="triangle">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
           <span class="tool-tip">Triangle</span>
         </button>
-        <button class="tool-btn" id="tool-text" data-tool="text" title="Text (T)">
+        <button class="tool-btn" id="tool-text" data-tool="text">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
           <span class="tool-tip">Text  T</span>
         </button>
-        <button class="tool-btn" id="tool-image" data-tool="image" title="Image (I)">
+        <button class="tool-btn" id="tool-image" data-tool="image">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
           <span class="tool-tip">Image  I</span>
         </button>
 
         <div class="tool-sep"></div>
 
-        <button class="tool-btn danger-tool" id="tool-delete" title="Delete (Del)">
+        <button class="tool-btn danger-tool" id="tool-delete">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
           <span class="tool-tip">Delete  Del</span>
         </button>
@@ -286,8 +372,6 @@
     <!-- CANVAS AREA -->
     <main id="canvas-area">
       <canvas id="canvas"></canvas>
-
-      <!-- Status bar -->
       <div id="statusbar">
         <span class="status-item" id="status-cursor">x: 0  y: 0</span>
         <div class="status-div"></div>
@@ -301,13 +385,14 @@
     <aside id="panel">
       <div class="panel-scroll">
 
-        <!-- Design section -->
+        <!-- DESIGN -->
         <div class="panel-section" id="sec-design">
           <div class="sec-header" data-section="design">
             DESIGN
             <svg class="sec-arrow open" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
           </div>
           <div class="sec-body" id="body-design">
+            <!-- Position -->
             <div class="prop-row">
               <div class="prop-field">
                 <div class="prop-label">X</div>
@@ -318,6 +403,7 @@
                 <input class="prop-input" id="prop-y" type="number" step="1" disabled placeholder="—" />
               </div>
             </div>
+            <!-- Size -->
             <div class="prop-row">
               <div class="prop-field">
                 <div class="prop-label">W</div>
@@ -328,6 +414,7 @@
                 <input class="prop-input" id="prop-h" type="number" step="1" disabled placeholder="—" />
               </div>
             </div>
+            <!-- Rotation / Radius -->
             <div class="prop-row">
               <div class="prop-field">
                 <div class="prop-label">Rotation</div>
@@ -338,49 +425,51 @@
                 <input class="prop-input" id="prop-radius" type="number" step="1" min="0" disabled placeholder="0" />
               </div>
             </div>
-            <!-- Add this inside the design sec-body after the W/H prop-row -->
-<div class="prop-row">
-  <div class="prop-field">
-    <div class="prop-label">Min W</div>
-    <input class="prop-input" id="prop-minw" type="number" step="1" min="0" disabled placeholder="—" />
-  </div>
-  <div class="prop-field">
-    <div class="prop-label">Min H</div>
-    <input class="prop-input" id="prop-minh" type="number" step="1" min="0" disabled placeholder="—" />
-  </div>
-</div>
-<div class="prop-row">
-  <div class="prop-field">
-    <div class="prop-label">Max W</div>
-    <input class="prop-input" id="prop-maxw" type="number" step="1" min="0" disabled placeholder="—" />
-  </div>
-  <div class="prop-field">
-    <div class="prop-label">Max H</div>
-    <input class="prop-input" id="prop-maxh" type="number" step="1" min="0" disabled placeholder="—" />
-  </div>
-</div>
-<div class="prop-row">
-  <div class="prop-field">
-    <div class="prop-label">Aspect</div>
-    <select class="prop-input" id="prop-aspect" disabled>
-      <option value="free">Free</option>
-      <option value="lock">Locked</option>
-      <option value="1:1">1 : 1</option>
-      <option value="16:9">16 : 9</option>
-      <option value="4:3">4 : 3</option>
-      <option value="3:2">3 : 2</option>
-      <option value="9:16">9 : 16</option>
-    </select>
-  </div>
-  <div class="prop-field">
-    <div class="prop-label">Scale %</div>
-    <input class="prop-input" id="prop-scale" type="number" step="1" min="1" max="1000" disabled placeholder="100" />
-  </div>
-</div>
+            <!-- Min dimensions -->
+            <div class="prop-row">
+              <div class="prop-field">
+                <div class="prop-label">Min W</div>
+                <input class="prop-input" id="prop-minw" type="number" step="1" min="0" disabled placeholder="—" />
+              </div>
+              <div class="prop-field">
+                <div class="prop-label">Min H</div>
+                <input class="prop-input" id="prop-minh" type="number" step="1" min="0" disabled placeholder="—" />
+              </div>
+            </div>
+            <!-- Max dimensions -->
+            <div class="prop-row">
+              <div class="prop-field">
+                <div class="prop-label">Max W</div>
+                <input class="prop-input" id="prop-maxw" type="number" step="1" min="0" disabled placeholder="—" />
+              </div>
+              <div class="prop-field">
+                <div class="prop-label">Max H</div>
+                <input class="prop-input" id="prop-maxh" type="number" step="1" min="0" disabled placeholder="—" />
+              </div>
+            </div>
+            <!-- Aspect / Scale -->
+            <div class="prop-row">
+              <div class="prop-field">
+                <div class="prop-label">Aspect</div>
+                <select class="prop-input" id="prop-aspect" disabled>
+                  <option value="free">Free</option>
+                  <option value="lock">Locked</option>
+                  <option value="1:1">1 : 1</option>
+                  <option value="16:9">16 : 9</option>
+                  <option value="4:3">4 : 3</option>
+                  <option value="3:2">3 : 2</option>
+                  <option value="9:16">9 : 16</option>
+                </select>
+              </div>
+              <div class="prop-field">
+                <div class="prop-label">Scale %</div>
+                <input class="prop-input" id="prop-scale" type="number" step="1" min="1" max="1000" disabled placeholder="100" />
+              </div>
+            </div>
           </div>
         </div>
 
-        <!-- Fill section -->
+        <!-- FILL -->
         <div class="panel-section" id="sec-fill">
           <div class="sec-header" data-section="fill">
             FILL
@@ -401,7 +490,7 @@
           </div>
         </div>
 
-        <!-- Stroke section -->
+        <!-- STROKE -->
         <div class="panel-section" id="sec-stroke">
           <div class="sec-header" data-section="stroke">
             STROKE
@@ -431,7 +520,7 @@
           </div>
         </div>
 
-        <!-- Text section -->
+        <!-- TEXT -->
         <div class="panel-section" id="sec-text" style="display:none">
           <div class="sec-header" data-section="text">
             TEXT
@@ -469,82 +558,79 @@
                   <option value="right">Right</option>
                 </select>
               </div>
-<div class="prop-field">
-  <div class="prop-label">Font</div>
-  <button class="font-picker-trigger" id="font-picker-trigger">
-    <span id="font-trigger-preview">DM Sans</span>
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-  </button>
-</div>
+              <div class="prop-field">
+                <div class="prop-label">Font</div>
+                <button class="font-picker-trigger" id="font-picker-trigger">
+                  <span id="font-trigger-preview">DM Sans</span>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+              </div>
             </div>
-            <div class="prop-row full">
-  <div class="prop-field" style="display: none;" >
-    <div class="prop-label" >Font Family</div>
-    <select class="prop-input" id="text-font"></select>
-  </div>
-</div>
-<div class="font-import-row">
-  <button class="btn-font-import" id="btn-import-font">
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-    Import Font
-  </button>
-  <span class="font-import-hint">TTF, OTF, WOFF, WOFF2</span>
-</div>
-<input type="file" id="font-file-input" accept=".ttf,.otf,.woff,.woff2,.eot" multiple />
+            <!-- Hidden legacy font select (kept for JS compatibility) -->
+            <div style="display:none">
+              <select id="text-font"></select>
+            </div>
+            <div class="font-import-row">
+              <button class="btn-font-import" id="btn-import-font">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Import Font
+              </button>
+              <span class="font-import-hint">TTF, OTF, WOFF, WOFF2</span>
+            </div>
           </div>
         </div>
 
-<!-- Preview section -->
-<div class="panel-section" id="sec-preview">
-  <div class="sec-header" data-section="preview">
-    PREVIEW
-    <svg class="sec-arrow open" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-  </div>
-  <div class="sec-body" id="body-preview">
-    <div class="preview-empty" id="preview-empty">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-      <p>Select an element<br/>to preview it</p>
-    </div>
-    <div class="preview-wrap" id="preview-wrap" style="display:none">
-      <canvas id="preview-canvas" width="236" height="160"></canvas>
-      <div class="preview-meta" id="preview-meta"></div>
-    </div>
-  </div>
-</div>
+        <!-- PREVIEW -->
+        <div class="panel-section" id="sec-preview">
+          <div class="sec-header" data-section="preview">
+            PREVIEW
+            <svg class="sec-arrow open" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+          <div class="sec-body" id="body-preview">
+            <div class="preview-empty" id="preview-empty">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              <p>Select an element<br/>to preview it</p>
+            </div>
+            <div class="preview-wrap" id="preview-wrap" style="display:none">
+              <canvas id="preview-canvas" width="236" height="160"></canvas>
+              <div class="preview-meta" id="preview-meta"></div>
+            </div>
+          </div>
+        </div>
 
-<!-- Image section -->
-<div class="panel-section" id="sec-image" style="display:none">
-  <div class="sec-header" data-section="image">
-    IMAGE
-    <svg class="sec-arrow open" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-  </div>
-  <div class="sec-body" id="body-image">
-    <div class="image-preview-wrap" id="image-preview-wrap">
-      <img id="image-preview-img" src="" alt="preview" />
-      <div class="image-preview-info" id="image-preview-info"></div>
-    </div>
-    <div class="prop-row">
-      <div class="prop-field">
-        <div class="prop-label">Fit</div>
-        <select class="prop-input" id="image-fit">
-          <option value="fill">Fill</option>
-          <option value="contain">Contain</option>
-          <option value="cover">Cover</option>
-        </select>
-      </div>
-      <div class="prop-field">
-        <div class="prop-label">Opacity</div>
-        <input class="prop-input" id="image-opacity" type="number" min="0" max="100" value="100" />
-      </div>
-    </div>
-    <button class="btn-replace" id="btn-replace-image">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-      Replace Image
-    </button>
-  </div>
-</div>
+        <!-- IMAGE -->
+        <div class="panel-section" id="sec-image" style="display:none">
+          <div class="sec-header" data-section="image">
+            IMAGE
+            <svg class="sec-arrow open" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+          <div class="sec-body" id="body-image">
+            <div class="image-preview-wrap" id="image-preview-wrap">
+              <img id="image-preview-img" src="" alt="preview" />
+              <div class="image-preview-info" id="image-preview-info"></div>
+            </div>
+            <div class="prop-row">
+              <div class="prop-field">
+                <div class="prop-label">Fit</div>
+                <select class="prop-input" id="image-fit">
+                  <option value="fill">Fill</option>
+                  <option value="contain">Contain</option>
+                  <option value="cover">Cover</option>
+                </select>
+              </div>
+              <div class="prop-field">
+                <div class="prop-label">Opacity</div>
+                <input class="prop-input" id="image-opacity" type="number" min="0" max="100" value="100" />
+              </div>
+            </div>
+            <button class="btn-replace" id="btn-replace-image">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Replace Image
+            </button>
+          </div>
+        </div>
 
-        <!-- Layers section -->
+        <!-- LAYERS -->
         <div class="panel-section" id="sec-layers">
           <div class="sec-header" data-section="layers">
             LAYERS
@@ -560,90 +646,12 @@
           </div>
         </div>
 
-      </div>
+      </div><!-- /.panel-scroll -->
     </aside>
 
   </div><!-- /#app -->
-<div id="projects-dialog" class="dialog-backdrop hidden">
-  <div class="dialog dialog-wide">
-    <div class="dialog-header">
-      <span class="dialog-title">Projects</span>
-      <button class="dialog-close" id="projects-close">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
-    </div>
-    <div class="dialog-body">
-      <div class="projects-toolbar">
-        <input class="projects-search" id="projects-search" type="text" placeholder="Search projects…" />
-        <button class="btn-primary" id="btn-save-project">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-          Save Current
-        </button>
-      </div>
-      <div class="projects-grid" id="projects-grid">
-        <div class="projects-empty" id="projects-empty">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
-          <p>No saved projects yet.<br/>Save your current canvas to get started.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
 
-<!-- Save Name Dialog -->
-<div id="savename-dialog" class="dialog-backdrop hidden">
-  <div class="dialog">
-    <div class="dialog-header">
-      <span class="dialog-title">Save Project</span>
-      <button class="dialog-close" id="savename-close">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
-    </div>
-    <div class="dialog-body">
-      <div class="dialog-field">
-        <label class="dialog-label">Project Name</label>
-        <input class="dialog-input" id="savename-input" type="text" placeholder="My Project…" />
-      </div>
-    </div>
-    <div class="dialog-footer">
-      <button class="btn-ghost" id="savename-cancel">Cancel</button>
-      <button class="btn-primary" id="savename-confirm">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-        Save
-      </button>
-    </div>
-  </div>
-</div>
-<div id="toast"></div>
-<!-- Font Picker Modal -->
-<div id="font-picker-dialog" class="dialog-backdrop hidden">
-  <div class="dialog dialog-font">
-    <div class="dialog-header">
-      <span class="dialog-title">Choose Font</span>
-      <button class="dialog-close" id="font-picker-close">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
-    </div>
-    <div class="dialog-body font-picker-body">
-      <div class="font-picker-top">
-        <input class="projects-search" id="font-search" type="text" placeholder="Search fonts…" />
-        <button class="btn-font-import" id="btn-import-font2">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          Import
-        </button>
-      </div>
-      <div class="font-picker-group-label">Built-in</div>
-      <div class="font-picker-list" id="font-picker-builtin"></div>
-      <div class="font-picker-group-label" id="font-picker-imported-label" style="display:none">Imported</div>
-      <div class="font-picker-list" id="font-picker-imported"></div>
-    </div>
-    <div class="dialog-footer">
-      <button class="btn-ghost" id="font-picker-cancel">Cancel</button>
-      <button class="btn-primary" id="font-picker-confirm">Apply</button>
-    </div>
-  </div>
-</div>
-<script src="db.js"></script>
-<script src="editor.js"></script>
+  <script src="db.js"></script>
+  <script src="editor.js"></script>
 </body>
 </html>

@@ -1,828 +1,619 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>iota — Mobile UI/UX design in your browser</title>
-    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300..700;1,300..700&display=swap" rel="stylesheet">  
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400&display=swap" rel="stylesheet"/>
-
-    <link rel="stylesheet" href="/chillax.css">
-    <link rel="stylesheet" href="style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>iota — Design Editor</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
 <script>
   if (localStorage.getItem('canvas_visited')) {
     window.location.replace('/editor');
   }
-</script>
-      <style>
-      #typewriter {
-          position: absolute;
-          right:2em ;
-          top: 1.4em;
-          opacity: .7;
-          font-size: .9rem;
-          white-space: nowrap;
-          border-right: .2px solid #000;
-          padding-right: 2px;
-          animation: blink 0.9s infinite;
-      }
-      
-      @keyframes blink {
-          50% {
-              border-color: transparent;
-          }
-      }
-      
-      .icon {
-          width: 20px;
-          height: 20px;
-          display: inline-block;
-          vertical-align: middle;
-      }
-      
-      .logo-icon {
-          width: 24px;
-          height: 24px;
-      }
-      
-      .stat-icon, .step-icon svg {
-          width: 32px;
-          height: 32px;
-      }
-      
-      .heart-icon {
-          width: 16px;
-          height: 16px;
-      }
-  </style>
-<script>
-    document.addEventListener("DOMContentLoaded", () => {
-    const texts = [
-    "Believe you can.",
-    "Dream big, start small.",
-    "Keep going.",
-    "Push yourself.",
-    "Great things take time.",
-    "Do it now.",
-    "No limits.",
-    "Stay positive.",
-    "Work hard, succeed.",
-    "Make it happen.",
-    "Challenge your limits.",
-    "Focus on progress.",
-    "Take action.",
-    "Start today.",
-    "Rise above fear.",
-    "Be stronger.",
-    "Never give up.",
-    "Create your future.",
-    "Small steps, big results.",
-    "Keep moving forward.",
-    "Your time is now.",
-    "Stay consistent.",
-    "Progress, not perfection.",
-    "Embrace the grind.",
-    "You’ve got this.",
-    "Dream, plan, do.",
-    "Push past doubt.",
-    "Believe, achieve.",
-    "Stay hungry.",
-    "Own your journey."
-];
-    
-    let textIndex = Math.floor(Math.random() * texts.length);;
-    let charIndex = 0;
-    let isDeleting = false;
-    let isDeletingTypo = false;
-    
-    const typewriter = document.getElementById("typewriter");
-    
-    const speeds = {
-        normal: () => 80 + Math.random() * 100,
-        fast: () => 40 + Math.random() * 60,
-        slow: () => 150 + Math.random() * 150,
-        punctuation: () => 200 + Math.random() * 200,
-        delete: () => 300 + Math.random() * 40,
-        mistake: () => 600 + Math.random() * 400
-    };
-    
-    const typoChance = 0.08;
-    let shouldMakeTypo = false;
-    let typosMade = 0;
-    
-    function getTypingSpeed() {
-        if (isDeleting || isDeletingTypo) return speeds.delete();
-        
-        if (charIndex > 0) {
-            const prevChar = texts[textIndex].charAt(charIndex - 1);
-            if (['.', ',', '!', '?', ';', ':'].includes(prevChar)) {
-                return speeds.punctuation();
-            }
-        }
-        
-        const rand = Math.random();
-        if (rand < 0.1) return speeds.slow();
-        if (rand < 0.3) return speeds.fast();
-        return speeds.normal();
-    }
-    
-    function shouldMakeMistake() {
-        if (texts[textIndex].length < 5 || texts[textIndex].charAt(charIndex) === ' ') {
-            return false;
-        }
-        if (typosMade >= 2) return false;
-        
-        return Math.random() < typoChance;
-    }
-    
-    function getRandomWrongChar(correctChar) {
-        const keyboardMap = {
-            'a': ['s', 'q', 'w'], 'b': ['v', 'g', 'h', 'n'], 'c': ['x', 'd', 'f', 'v'],
-            'd': ['s', 'e', 'r', 'f', 'c'], 'e': ['w', 'r', 'd'], 'f': ['d', 'r', 't', 'g', 'v'],
-            'g': ['f', 't', 'y', 'h', 'b'], 'h': ['g', 'y', 'u', 'j', 'n'], 'i': ['u', 'o', 'k'],
-            'j': ['h', 'u', 'i', 'k', 'm'], 'k': ['j', 'i', 'o', 'l'], 'l': ['k', 'o', 'p'],
-            'm': ['n', 'j', 'k'], 'n': ['b', 'h', 'j', 'm'], 'o': ['i', 'p', 'l'],
-            'p': ['o', 'l'], 'q': ['w', 'a'], 'r': ['e', 't', 'f'],
-            's': ['a', 'w', 'd', 'x'], 't': ['r', 'y', 'g'], 'u': ['y', 'i', 'j'],
-            'v': ['c', 'f', 'g', 'b'], 'w': ['q', 'e', 's'], 'x': ['z', 's', 'd', 'c'],
-            'y': ['t', 'u', 'h'], 'z': ['a', 's', 'x']
-        };
-        
-        const lower = correctChar.toLowerCase();
-        const mistakes = keyboardMap[lower] || ['x', 'z', 'q'];
-        const wrongChar = mistakes[Math.floor(Math.random() * mistakes.length)];
-        
-        return correctChar === correctChar.toUpperCase() ? wrongChar.toUpperCase() : wrongChar;
-    }
-    
-    function type() {
-        const currentText = texts[textIndex];
-        
-        if (isDeletingTypo) {
-            typewriter.textContent = currentText.substring(0, charIndex - 1);
-            charIndex--;
-            isDeletingTypo = false;
-            setTimeout(type, speeds.normal());
-            return;
-        }
-        
-        if (!isDeleting && charIndex <= currentText.length) {
-            if (!shouldMakeTypo && charIndex < currentText.length && shouldMakeMistake()) {
-                shouldMakeTypo = true;
-            }
-            
-            if (shouldMakeTypo && charIndex < currentText.length) {
-                const wrongChar = getRandomWrongChar(currentText.charAt(charIndex));
-                typewriter.textContent += wrongChar;
-                charIndex++;
-                shouldMakeTypo = false;
-                typosMade++;
-                
-                setTimeout(() => {
-                    isDeletingTypo = true;
-                    setTimeout(type, speeds.delete());
-                }, speeds.mistake());
-                return;
-            }
-            
-            if (charIndex < currentText.length) {
-                typewriter.textContent += currentText.charAt(charIndex);
-                charIndex++;
-                setTimeout(type, getTypingSpeed());
-            } else {
-                setTimeout(() => {
-                    isDeleting = true;
-                    setTimeout(type, speeds.delete());
-                }, 2000);
-            }
-        }
-        else if (isDeleting && charIndex > 0) {
-            typewriter.textContent = currentText.substring(0, charIndex - 1);
-            charIndex--;
-            setTimeout(type, speeds.delete());
-        }
-        else if (isDeleting && charIndex === 0) {
-            isDeleting = false;
-            typosMade = 0;
-            textIndex = (textIndex + 1) % texts.length;
-            setTimeout(type, 500);
-        }
-    }
-    
-    type();
-});
-</script>
-<style>
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet" />
 
-  .presentation-container {
-    width: 100%;
-    margin: 2em auto;
-    height: 300px;
-    position: relative;
-    overflow: visible;
-  }
-
-  .slide-counter {
-    position: absolute;
-    top: 12px;
-    left: 0;
-    right: 0;
-    text-align: center;
-    color: rgba(255,255,255,0.8);
-    font-family: 'Syne', sans-serif;
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 0.14em;
-    z-index: 200;
-    pointer-events: none;
-  }
-
-  .navigation {
-    position: absolute;
-    display: flex;
-    justify-content: center;
-    right: .6em;
-    top: -3em;
-    gap: 16px;
-    z-index: 200;
-  }
-
-  .nav-btn {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: black;
-    backdrop-filter: blur(6px);
-    border: 1px solid rgba(255,255,255,0.22);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.2s;
-  }
-
-  .nav-btn svg {
-    width: 16px; height: 16px;
-    stroke: white; stroke-width: 2.5; fill: none;
-  }
-
-  .carousel-window {
-    width: 100%;
-    height: 100%;
-    
-    overflow: hidden;
-    clip-path: inset(0 -9999px);
-    position: relative;
-  }
-
-  .carousel-track {
-    display: flex;
-    height: 100%;
-    
-    transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
-    will-change: transform;
-  }
-  .carousel-track.no-transition { transition: none !important; }
-
-  .slide {
-    flex: 0 0 calc(100vw - 80px);
-    height: 100%;
-    position: relative;
-    
-    overflow: hidden;
-    margin: 0 6px;
-    transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1),
-                opacity   0.55s ease,
-            
-    transform: scale(0.5);
-    
-  }
-
-  .slide.active {
-    transform: scale(1);
-    
-
-  }
-
-  .slide.no-transition-slide {
-    transition: none !important;
-  }
-
-  .slide-bg {
-    position: absolute;
-    inset: 0;
-    filter: grayscale(.7);
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    
-  }
-
-  .slide-bg::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-
-    background: linear-gradient(
-      to top,
-      rgba(0,0,0,0.75) 0%,
-      rgba(0,0,0,0.15) 50%,
-      rgba(0,0,0,0.05) 100%
-    );
-  }
-
-  .slide-title {
-    position: absolute;
-    bottom: 28px;
-    left: 22px;
-    right: 22px;
-    font-family: 'Syne', sans-serif;
-    font-size: 30px;
-    font-weight: 800;
-    color: #fff;
-    line-height: 1.05;
-    letter-spacing: -0.01em;
-    z-index: 10;
-    text-shadow: 0 2px 16px rgba(0,0,0,0.5);
-  }
-
-  .slide-1  .slide-bg { background-image: url('https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?w=900&q=85'); }
-  .slide-2  .slide-bg { background-image: url('https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=900&q=85'); }
-  .slide-3  .slide-bg { background-image: url('https://images.unsplash.com/photo-1634942537034-2531766767d1?w=900&q=85'); }
-  .slide-4  .slide-bg { background-image: url('https://images.unsplash.com/photo-1581291518857-4e27b48ff24e?w=900&q=85'); }
-  .slide-5  .slide-bg { background-image: url('https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=900&q=85'); }
-  .slide-6  .slide-bg { background-image: url('https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=900&q=85'); }
-  .slide-7  .slide-bg { background-image: url('https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=900&q=85'); }
-  .slide-8  .slide-bg { background-image: url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=900&q=85'); }
-  .slide-9  .slide-bg { background-image: url('https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=900&q=85'); }
-  .slide-10 .slide-bg { background-image: url('https://images.unsplash.com/photo-1423666639041-f56000c27a9a?w=900&q=85'); }
-</style>
-<script>
-document.addEventListener('DOMContentLoaded', ()=>{
-    const carouselTrack   = document.getElementById('carouselTrack');
-  const buttonPrev      = document.getElementById('prevBtn');
-  const buttonNext      = document.getElementById('nextBtn');
-  const currentSlideEl  = document.getElementById('currentSlide');
-  const totalSlidesEl   = document.getElementById('totalSlides');
-
-  const SLIDE_GAP = 6;
-  const SIDE_PEEK = 40;
-
-  const slidesArray   = Array.from(carouselTrack.querySelectorAll('.slide'));
-  const slidesCount   = slidesArray.length;
-  totalSlidesEl.textContent = slidesCount;
-
-  const cloneFirst = slidesArray[0].cloneNode(true);
-  const cloneLast  = slidesArray[slidesCount - 1].cloneNode(true);
-  cloneFirst.setAttribute('data-clone', 'first');
-  cloneLast.setAttribute('data-clone', 'last');
-  carouselTrack.appendChild(cloneFirst);
-  carouselTrack.insertBefore(cloneLast, carouselTrack.firstChild);
-
-  const getAllSlides = () => Array.from(carouselTrack.children);
-
-  let slideIndex       = 1;
-  let transitionLocked = false;
-
-  function getSlideWidth() {
-    return window.innerWidth - (SIDE_PEEK * 2);
-  }
-
-  function getStepSize() {
-    return getSlideWidth() + (SLIDE_GAP * 2);
-  }
-
-  function getTranslateOffset(index) {
-    return -(index * getStepSize()) + SIDE_PEEK;
-  }
-
-  function refreshActiveClass() {
-    getAllSlides().forEach((slide, i) => {
-      slide.classList.toggle('active', i === slideIndex);
-    });
-  }
-
-  function moveToPosition(animate) {
-    carouselTrack.classList.toggle('no-transition', !animate);
-    
-    if (!animate) {
-      getAllSlides().forEach(slide => slide.classList.add('no-transition-slide'));
-    } else {
-      getAllSlides().forEach(slide => slide.classList.remove('no-transition-slide'));
-    }
-    
-    carouselTrack.style.transform = `translateX(${getTranslateOffset(slideIndex)}px)`;
-
-    let displayIndex = slideIndex;
-    if      (displayIndex === 0)               displayIndex = slidesCount;
-    else if (displayIndex === slidesCount + 1) displayIndex = 1;
-    currentSlideEl.textContent = displayIndex;
-
-    refreshActiveClass();
-  }
-
-  moveToPosition(false);
-
-  carouselTrack.addEventListener('transitionend', () => {
-    const currentSlide = carouselTrack.children[slideIndex];
-    if (currentSlide.getAttribute('data-clone') === 'first') { 
-      slideIndex = 1;
-      moveToPosition(false);
-    }
-    if (currentSlide.getAttribute('data-clone') === 'last')  { 
-      slideIndex = slidesCount;
-      moveToPosition(false);
-    }
-    transitionLocked = false;
-  });
-
-  function goNext() {
-    if (transitionLocked) return;
-    transitionLocked = true;
-    slideIndex++;
-    moveToPosition(true);
-  }
-  function goPrev() {
-    if (transitionLocked) return;
-    transitionLocked = true;
-    slideIndex--;
-    moveToPosition(true);
-  }
-
-  buttonNext.addEventListener('click', goNext);
-  buttonPrev.addEventListener('click', goPrev);
-  document.addEventListener('keydown', e => {
-    if (e.key === 'ArrowLeft')  goPrev();
-    if (e.key === 'ArrowRight') goNext();
-  });
-
-  // Touch
-  let touchStartX = 0, touchEndX = 0, isTouchDragging = false, dragStartOffset = 0;
-  carouselTrack.addEventListener('touchstart', e => {
-    if (transitionLocked) return;
-    touchStartX = e.touches[0].clientX; isTouchDragging = true;
-    dragStartOffset = getTranslateOffset(slideIndex);
-    carouselTrack.classList.add('no-transition');
-  }, { passive: true });
-  carouselTrack.addEventListener('touchmove', e => {
-    if (!isTouchDragging) return;
-    touchEndX = e.touches[0].clientX;
-    carouselTrack.style.transform = `translateX(${dragStartOffset + (touchEndX - touchStartX)}px)`;
-  }, { passive: true });
-  carouselTrack.addEventListener('touchend', () => {
-    if (!isTouchDragging) return; isTouchDragging = false;
-    const diff = touchEndX - touchStartX;
-    if (Math.abs(diff) > 60) { diff > 0 ? goPrev() : goNext(); }
-    else moveToPosition(true);
-    touchStartX = touchEndX = 0;
-  });
-
-  // Mouse
-  let mouseStartX = 0, mouseEndX = 0, isMouseDragging = false;
-  carouselTrack.style.cursor = 'grab';
-  carouselTrack.addEventListener('mousedown', e => {
-    if (transitionLocked) return;
-    mouseStartX = e.clientX; isMouseDragging = true;
-    dragStartOffset = getTranslateOffset(slideIndex);
-    carouselTrack.classList.add('no-transition');
-    carouselTrack.style.cursor = 'grabbing';
-    e.preventDefault();
-  });
-  carouselTrack.addEventListener('mousemove', e => {
-    if (!isMouseDragging) return; mouseEndX = e.clientX;
-    carouselTrack.style.transform = `translateX(${dragStartOffset + (mouseEndX - mouseStartX)}px)`;
-  });
-  const finishDrag = () => {
-    if (!isMouseDragging) return; isMouseDragging = false; carouselTrack.style.cursor = 'grab';
-    const diff = mouseEndX - mouseStartX;
-    if (Math.abs(diff) > 60) { diff > 0 ? goPrev() : goNext(); }
-    else moveToPosition(true);
-    mouseStartX = mouseEndX = 0;
-  };
-  carouselTrack.addEventListener('mouseup', finishDrag);
-  carouselTrack.addEventListener('mouseleave', finishDrag);
-
-  // Handle window resize
-  window.addEventListener('resize', () => {
-    moveToPosition(false);
-  });
-})
-</script>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-<a href="#main" class="skip-link">Skip to main content</a>
 
-<nav>
-    <div class="nav-container">
-<a href="#" style="display:flex;align-items:center;gap:8px;font-family:'DM Sans',sans-serif;font-weight:600;font-size:14px;letter-spacing:-0.3px;color:#1a1917;text-decoration:none;">
-  <div style="width:26px;height:26px;background:#4f46e5;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-      <style>
-        @keyframes blockPulse {
-          0%, 100% { opacity: 0.2; }
-          50%       { opacity: 1; }
-        }
-        .b1 { animation: blockPulse 1.2s ease-in-out infinite 0.0s; }
-        .b2 { animation: blockPulse 1.2s ease-in-out infinite 0.3s; }
-        .b3 { animation: blockPulse 1.2s ease-in-out infinite 0.6s; }
-        .b4 { animation: blockPulse 1.2s ease-in-out infinite 0.9s; }
-      </style>
-      <rect class="b1" x="1" y="1" width="5" height="5" rx="1" fill="white"/>
-      <rect class="b2" x="8" y="1" width="5" height="5" rx="1" fill="white"/>
-      <rect class="b3" x="1" y="8" width="5" height="5" rx="1" fill="white"/>
-      <rect class="b4" x="8" y="8" width="5" height="5" rx="1" fill="white"/>
+  <!-- ── NAV ─────────────────────────────────────────────────── -->
+  <nav id="nav">
+    <div class="nav-inner">
+      <a class="nav-logo" href="#">
+        <div class="logo-mark">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <rect class="lb1" x="1" y="1" width="5" height="5" rx="1" fill="white"/>
+            <rect class="lb2" x="8" y="1" width="5" height="5" rx="1" fill="white"/>
+            <rect class="lb3" x="1" y="8" width="5" height="5" rx="1" fill="white"/>
+            <rect class="lb4" x="8" y="8" width="5" height="5" rx="1" fill="white"/>
+          </svg>
+        </div>
+
+      </a>
+
+      <ul class="nav-links" id="nav-links">
+        <li><a href="#product">Editor</a></li>
+        <li><a href="#use-cases">What?</a></li>
+        <li><a href="#how">How it works</a></li>
+        <li><a href="#pricing">Free?</a></li>
+        <li>
+          <a href="editor.html" onclick="localStorage.setItem('canvas_visited','1')" class="nav-cta">
+            Open editor
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+        </li>
+      </ul>
+
+      <button class="hamburger" id="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ── HERO ────────────────────────────────────────────────── -->
+  <section class="hero" id="hero">
+              <img src="/aloe vera-rafiki-1.svg" alt="Design thinking illustration"
+class="hero-illustration2" />
+    <div class="hero-grid">
+
+      <div class="hero-text">
+        <div class="hero-badge">
+          <span class="badge-dot"></span>
+          Now in beta — free version
+        </div>
+
+        <h1 class="hero-h1">
+          Design <em>mobile</em><br />
+          apps — directly<br />
+          in your <em>browser</em>
+        </h1>
+
+        <p class="hero-sub">
+          iota is a mobile-first UI/UX design tool that runs entirely in your browser.
+          Wireframe, prototype, and design screens from anywhere — no downloads, no friction.
+        </p>
+
+        <div class="hero-actions">
+          <a href="editor.html" onclick="localStorage.setItem('canvas_visited','1')" class="btn-primary">
+            Start designing free
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+          <a href="#how" class="btn-ghost">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            See how it works
+          </a>
+        </div>
+
+        <div class="hero-social-proof">
+          <div class="avatar-stack">
+            <div class="avatar" style="background:#c4b5a0"></div>
+            <div class="avatar" style="background:#a0b5c4"></div>
+            <div class="avatar" style="background:#b5a0c4"></div>
+            <div class="avatar" style="background:#c4a0a0"></div>
+          </div>
+          <span>Joined by <strong>2,400+</strong> designers this month</span>
+        </div>
+      </div>
+
+      <div class="hero-visual">
+        <div class="hero-illustration-wrap">
+          <!-- Storyset illustration — Design thinking / UI design -->
+
+          <img
+            src="/assets/img/svg/Creative thinking-pana.svg" 
+            alt="Design thinking illustration"
+            class="hero-illustration"
+            onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'"
+          />
+          <!-- Fallback if storyset blocks direct embed -->
+          <div class="hero-illustration-fallback" style="display:none">
+            <svg viewBox="0 0 400 360" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <!-- Phone mockup -->
+              <rect x="140" y="40" width="120" height="200" rx="18" fill="#e8e3dc" stroke="#c8c3bc" stroke-width="1.5"/>
+              <rect x="150" y="60" width="100" height="160" rx="8" fill="#f5f2ee"/>
+              <!-- Screen elements -->
+              <rect x="158" y="70" width="60" height="8" rx="4" fill="#6366f1" opacity=".7"/>
+              <rect x="158" y="84" width="84" height="6" rx="3" fill="#c8c3bc"/>
+              <rect x="158" y="96" width="70" height="6" rx="3" fill="#c8c3bc"/>
+              <rect x="158" y="114" width="84" height="40" rx="6" fill="#e8e3dc"/>
+              <rect x="158" y="162" width="40" height="6" rx="3" fill="#c8c3bc"/>
+              <rect x="158" y="174" width="60" height="6" rx="3" fill="#c8c3bc"/>
+              <rect x="158" y="196" width="84" height="14" rx="4" fill="#6366f1" opacity=".8"/>
+              <!-- Floating cards -->
+              <rect x="20" y="80" width="110" height="70" rx="12" fill="#fff" stroke="#e8e3dc" stroke-width="1"/>
+              <rect x="32" y="96" width="50" height="6" rx="3" fill="#6366f1" opacity=".5"/>
+              <rect x="32" y="108" width="86" height="5" rx="2.5" fill="#c8c3bc"/>
+              <rect x="32" y="118" width="70" height="5" rx="2.5" fill="#c8c3bc"/>
+              <rect x="270" y="120" width="110" height="70" rx="12" fill="#fff" stroke="#e8e3dc" stroke-width="1"/>
+              <rect x="282" y="136" width="50" height="6" rx="3" fill="#c4a882" opacity=".7"/>
+              <rect x="282" y="148" width="86" height="5" rx="2.5" fill="#c8c3bc"/>
+              <rect x="282" y="158" width="60" height="5" rx="2.5" fill="#c8c3bc"/>
+              <!-- Cursor -->
+              <path d="M300 60 L310 80 L304 77 L301 85 L296 73 L290 76 Z" fill="#6366f1"/>
+            </svg>
+          </div>
+
+          <!-- Floating stat cards -->
+          <div class="float-card float-card-1">
+            <div class="float-card-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+            </div>
+            <div>
+              <div class="float-card-val">0 installs</div>
+              <div class="float-card-label">Runs in browser</div>
+            </div>
+          </div>
+
+          <div class="float-card float-card-2">
+            <div class="float-card-icon" style="background:#fef3c7;color:#d97706">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z"/></svg>
+            </div>
+            <div>
+              <div class="float-card-val">Live canvas</div>
+              <div class="float-card-label">Real-time design</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ticker -->
+    <div class="ticker-wrap">
+      <div class="ticker">
+        <span>Wireframe</span><span class="ticker-dot">·</span>
+        <span>Prototype</span><span class="ticker-dot">·</span>
+        <span>Design</span><span class="ticker-dot">·</span>
+        <span>Collaborate</span><span class="ticker-dot">·</span>
+        <span>Export</span><span class="ticker-dot">·</span>
+        <span>Share</span><span class="ticker-dot">·</span>
+        <span>Iterate</span><span class="ticker-dot">·</span>
+        <span>Wireframe</span><span class="ticker-dot">·</span>
+        <span>Prototype</span><span class="ticker-dot">·</span>
+        <span>Design</span><span class="ticker-dot">·</span>
+        <span>Collaborate</span><span class="ticker-dot">·</span>
+        <span>Export</span><span class="ticker-dot">·</span>
+        <span>Share</span><span class="ticker-dot">·</span>
+        <span>Iterate</span><span class="ticker-dot">·</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── LOGOS / TRUST ────────────────────────────────────────── -->
+  <section class="trust-bar">
+    <p class="trust-label">Trusted by designers at</p>
+    <div class="trust-logos">
+      <span class="trust-name">Dribbble</span>
+      <span class="trust-sep">—</span>
+      <span class="trust-name">Product Hunt</span>
+      <span class="trust-sep">—</span>
+      <span class="trust-name">Behance</span>
+      <span class="trust-sep">—</span>
+      <span class="trust-name">Notion</span>
+      <span class="trust-sep">—</span>
+      <span class="trust-name">Linear</span>
+    </div>
+  </section>
+
+  <!-- ── PRODUCT SECTION ─────────────────────────────────────── -->
+  <section class="product-section" id="product">
+    
+    <div class="section-label">The editor</div>
+    <h2 class="section-h2">Everything you need.<br /><em>Nothing you don't.</em></h2>
+    <p class="section-sub">A focused design surface built for mobile-first workflows. No bloat, no subscriptions, no friction.</p>
+
+    <!-- Feature bento grid -->
+    <div class="bento-grid">
+
+      <div class="bento-card bento-large">
+        <div class="bento-content">
+          <div class="bento-tag">Canvas engine</div>
+          <h3>Real rendering.<br />No DOM hacks.</h3>
+          <p>Built on a pure canvas rendering engine — every element drawn with pixel-perfect math. Infinite zoom, camera system, proper world transforms.</p>
+        </div>
+        <div class="bento-visual bento-canvas-demo">
+<div class="float-card float-card-2" style="position: absolute; right: 2em">
+  <div class="float-card-icon" style="background:#d1fae5;color:#059669;">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-mouse-pointer-click-icon lucide-mouse-pointer-click">
+      <path d="M14 4.1 12 6" />
+      <path d="m5.1 8-2.9-.8" />
+      <path d="m6 12-1.9 2" />
+      <path d="M7.2 2.2 8 5.1" />
+      <path d="M9.037 9.69a.498.498 0 0 1 .653-.653l11 4.5a.5.5 0 0 1-.074.949l-4.349 1.041a1 1 0 0 0-.74.739l-1.04 4.35a.5.5 0 0 1-.95.074z" />
     </svg>
   </div>
-  
-</a>
-        <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
-            <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg>
-        </button>
-        <ul class="nav-links">
-            <li><a href="#product"><svg class="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"></path></svg> Editor</a></li>
-            <li><a href="#use-cases"><svg class="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"></path><path d="M9 18h6"></path><path d="M10 22h4"></path></svg> What?</a></li>
-            <li><a href="#resources"><svg class="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path></svg> Learn</a></li>
-            <li><a href="#pricing"><svg class="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path></svg> Free?</a></li>
-            <li><a href="/editor" onclick="localStorage.setItem('canvas_visited', '1')" class="btn-primary">
-                <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
-                Open editor
-            </a></li>
+  <div>
+    <div class="float-card-val">Fast design</div>
+    <div class="float-card-label">Quick-time design</div>
+  </div>
+</div>
+          <img src="/Features Overview-pana.svg" alt="Canvas illustration" onerror="this.parentNode.classList.add('fallback-bg')" />
+<div class="float-card float-card-1" style="position: absolute; left: 2em;">
+  <div class="float-card-icon" style="background:#dbeafe;color:#2563eb;">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
+    </svg>
+  </div>
+  <div>
+    <div class="float-card-val">Instant access</div>
+    <div class="float-card-label">Works in any browser</div>
+  </div>
+</div>
+
+        </div>
+      </div>
+
+      <div class="bento-card bento-tall">
+        <div class="bento-content">
+          <div class="bento-tag">Layers</div>
+          <h3>Full layer control</h3>
+          <p>Toggle visibility, reorder, select from the panel. Everything updates live.</p>
+        </div>
+        <div class="bento-visual">
+          <div class="layers-demo">
+            <div class="layer-demo-item active">
+              <div class="layer-demo-thumb" style="background:#6366f1"></div>
+              <span>Rectangle 3</span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </div>
+            <div class="layer-demo-item">
+              <div class="layer-demo-thumb" style="background:#f43f5e"></div>
+              <span>Ellipse 2</span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </div>
+            <div class="layer-demo-item">
+              <div class="layer-demo-thumb" style="background:#10b981"></div>
+              <span>Text label</span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+            </div>
+            <div class="layer-demo-item">
+              <div class="layer-demo-thumb" style="background:#f59e0b"></div>
+              <span>Rectangle 1</span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bento-card bento-medium">
+        <div class="bento-content">
+          <div class="bento-tag">Typography</div>
+          <h3>Custom font import</h3>
+          <p>Drop in any TTF, OTF, WOFF — fonts save with your project.</p>
+        </div>
+        <div class="bento-visual font-demo-wrap">
+          <div class="font-demo-item" style="font-family: 'Instrument Serif'; font-style:italic; font-size:28px">Heading</div>
+          <div class="font-demo-item" style="font-family: 'DM Sans'; font-size:14px; opacity:.6">Body text</div>
+          <div class="font-demo-item" style="font-family: 'Syne'; font-weight:700; font-size:18px">LABEL</div>
+        </div>
+      </div>
+
+
+
+      <div class="bento-card bento-wide">
+        <div class="bento-content">
+          <div class="bento-tag">Projects</div>
+          <h3>Save. Load. Pick up where you left off.</h3>
+          <p>Every project auto-saves to IndexedDB — images, fonts, layers, all of it. No account required.</p>
+        </div>
+        <div class="bento-visual projects-demo">
+          <div class="proj-card-demo">
+            <div class="proj-card-thumb" style="background: linear-gradient(135deg,#e0daf5 0%,#f5f2ee 100%)"></div>
+            <div class="proj-card-name">App redesign</div>
+            <div class="proj-card-date">Today</div>
+          </div>
+          <div class="proj-card-demo">
+            <div class="proj-card-thumb" style="background: linear-gradient(135deg,#fde8d8 0%,#f5f2ee 100%)"></div>
+            <div class="proj-card-name">Onboarding flow</div>
+            <div class="proj-card-date">Yesterday</div>
+          </div>
+          <div class="proj-card-demo">
+            <div class="proj-card-thumb" style="background: linear-gradient(135deg,#d8f5e8 0%,#f5f2ee 100%)"></div>
+            <div class="proj-card-name">Dashboard v2</div>
+            <div class="proj-card-date">3 days ago</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── USE CASES ───────────────────────────────────────────── -->
+  <section class="use-cases" id="use-cases">
+    <div class="use-cases-inner">
+      <div class="use-cases-left">
+        <div class="section-label">What it's for</div>
+        <h2 class="section-h2">Built for<br /><em>real workflows</em></h2>
+        <p class="section-sub">Whether you're a solo designer, a student, or a team — iota fits the way you actually work.</p>
+
+        <div class="use-case-list">
+          <div class="use-case-item" data-index="0">
+            <div class="use-case-num">01</div>
+            <div>
+              <strong>Wireframing</strong>
+              <p>Sketch layouts fast with shapes, text, and grids. No overhead.</p>
+            </div>
+          </div>
+          <div class="use-case-item" data-index="1">
+            <div class="use-case-num">02</div>
+            <div>
+              <strong>UI Design</strong>
+              <p>Build polished screens with custom colors, fonts, and images.</p>
+            </div>
+          </div>
+          <div class="use-case-item" data-index="2">
+            <div class="use-case-num">03</div>
+            <div>
+              <strong>Presentations</strong>
+              <p>Export at 2x for crisp design decks and client reviews.</p>
+            </div>
+          </div>
+          <div class="use-case-item" data-index="3">
+            <div class="use-case-num">04</div>
+            <div>
+              <strong>Learning</strong>
+              <p>Great for students and bootcamp designers who need a free tool.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="use-cases-right">
+        <div class="use-case-illustration">
+          <img
+            src="/User flow-pana.svg"
+            alt="Wireframing illustration"
+            class="use-case-img"
+            onerror="this.style.opacity='0'"
+          />
+          <!-- Pure CSS phone mockup fallback -->
+          <div class="phone-mockup">
+            <div class="phone-frame">
+              <div class="phone-notch"></div>
+              <div class="phone-screen">
+                <div class="screen-bar" style="width:60%;background:#6366f1;opacity:.7"></div>
+                <div class="screen-bar" style="width:90%"></div>
+                <div class="screen-bar" style="width:75%"></div>
+                <div class="screen-block"></div>
+                <div class="screen-bar" style="width:50%"></div>
+                <div class="screen-bar" style="width:80%"></div>
+                <div class="screen-btn"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── HOW IT WORKS ────────────────────────────────────────── -->
+  <section class="how-section" id="how">
+    <div class="section-label">Process</div>
+    <h2 class="section-h2">From idea to<br /><em>finished design</em></h2>
+
+    <div class="process-grid">
+
+      <div class="process-step">
+        <div class="process-illustration">
+          <img src="/Thoughts-rafiki.svg" alt="Think" onerror="this.style.opacity='0'" />
+          <div class="process-icon-fallback">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/><line x1="9" y1="21" x2="15" y2="21"/><line x1="10" y1="17" x2="14" y2="17"/></svg>
+          </div>
+        </div>
+        <div class="process-num">01</div>
+        <h3>Think</h3>
+        <p>Define your app idea, outline screens, and plan the user flow before touching the canvas.</p>
+      </div>
+
+      <div class="process-arrow">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </div>
+
+      <div class="process-step">
+        <div class="process-illustration">
+          <img src="/Processing-rafiki.svg" alt="Wireframe" onerror="this.style.opacity='0'" />
+          <div class="process-icon-fallback">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+          </div>
+        </div>
+        <div class="process-num">02</div>
+        <h3>Wireframe</h3>
+        <p>Sketch the structure of every screen with basic shapes before adding visual polish.</p>
+      </div>
+
+      <div class="process-arrow">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </div>
+
+      <div class="process-step">
+        <div class="process-illustration">
+          <img src="/Creative thinking-cuate.svg" alt="Design" onerror="this.style.opacity='0'" />
+          <div class="process-icon-fallback">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+          </div>
+        </div>
+        <div class="process-num">03</div>
+        <h3>Design</h3>
+        <p>Add color, typography, and images. Turn wireframes into polished, production-ready screens.</p>
+      </div>
+
+      <div class="process-arrow">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </div>
+
+      <div class="process-step">
+        <div class="process-illustration">
+          <img src="/Conversation-pana.svg" alt="Share" onerror="this.style.opacity='0'" />
+          <div class="process-icon-fallback">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+          </div>
+        </div>
+        <div class="process-num">04</div>
+        <h3>Share</h3>
+        <p>Export at crisp 2x resolution or share with teammates for feedback and handoff.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── STATS ────────────────────────────────────────────────── -->
+  <section class="stats-section">
+    <div class="stats-grid">
+      <div class="stat-item">
+        <div class="stat-num">0</div>
+        <div class="stat-label">Installs required</div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <div class="stat-num">∞</div>
+        <div class="stat-label">Canvas size</div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <div class="stat-num">2GB</div>
+        <div class="stat-label">Local project storage</div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <div class="stat-num">Free</div>
+        <div class="stat-label">Always, no credit card</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── PRICING ──────────────────────────────────────────────── -->
+  <section class="pricing-section" id="pricing">
+    
+    <div class="section-label">Pricing</div>
+    <h2 class="section-h2">Refreshingly<br /><em>simple pricing</em></h2>
+    <p class="section-sub">One plan. Everything included. No surprises.</p>
+
+    <div class="pricing-card-wrap">
+      <div class="pricing-card">
+        <div class="pricing-badge">Everything included</div>
+        <div class="pricing-amount">
+          <span class="pricing-dollar">$</span>
+          <span class="pricing-num">0</span>
+          <span class="pricing-period">/ forever</span>
+        </div>
+        <p class="pricing-desc">No account required. Open the editor and start designing immediately.</p>
+
+        <ul class="pricing-list">
+          <li>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Unlimited canvas & projects
+          </li>
+          <li>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Custom font import (TTF, OTF, WOFF)
+          </li>
+          <li>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            PNG export at 1x / 2x / 3x
+          </li>
+          <li>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Local project save (IndexedDB)
+          </li>
+          <li>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Shapes, text, images, layers
+          </li>
+          <li>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Works on mobile & desktop
+          </li>
         </ul>
-    </div>
-</nav>
 
-<main id="main" style="position: relative;">
-
-  <span id="typewriter"></span>
-<img style="position: absolute; height:70px; width:100px; top: 0;" src="/file_00000000a61c71f492a1a36e6ded6a3e.png" alt="" />
-<section class="hero">
-
-    <h1>Design <span style="font-family: 'Instrument Serif', serif; font-style: italic; font-weight: 300;">mobile  </span> apps directly in your <br />
-    <span style="font-family: 'Instrument Serif', serif; font-style: italic; font-weight: 300;">browser  </span></h1>
-    
-    <p>
-        iota is a <strong> mobile-first UI/UX design tool</strong> that runs entirely online.<br>
-        Wireframe, prototype, and design screens from your phone — no downloads.
-    </p>
-    
-    <div class="hero-cta">
-        <a href="/editor" onclick="localStorage.setItem('canvas_visited', '1')" class="btn-primary btn-large">
-            <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"></path><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"></path><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"></path><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"></path></svg>
-            Start designing 
-
+        <a href="editor.html" onclick="localStorage.setItem('canvas_visited','1')" class="btn-primary pricing-btn">
+          Start designing now
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </a>
-        <a href="#" class="btn-secondary btn-large">
-            <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-            Watch demo
+      </div>
+
+      <div class="pricing-illustration">
+                  <div class="float-card float-card-1 style="z-index: 889998;"">
+            <div class="float-card-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+            </div>
+            <div>
+              <div class="float-card-val">Love</div>
+              <div class="float-card-label">Seriously, love... its the answer</div>
+            </div>
+          </div>
+        <img src="/Free love-rafiki.svg" alt="Free illustration" onerror="this.style.opacity='0'" />
+        <div class="pricing-blob"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CTA FINAL ────────────────────────────────────────────── -->
+  <section class="final-cta">
+    <div class="final-cta-inner">
+      <div class="final-cta-text">
+        <h2>Ready to design<br /><em>your mobile app?</em></h2>
+        <p>Open the editor in seconds. No sign-up, no download, no credit card.</p>
+        <div class="final-cta-actions">
+          <a href="editor.html" onclick="localStorage.setItem('canvas_visited','1')" class="btn-primary">
+            Open editor free
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+          <a href="#product" class="btn-ghost btn-ghost-light">Explore features</a>
+        </div>
+      </div>
+      <div class="final-cta-visual">
+        <img src="https://storyset.com/illustration/mobile-development/amico" alt="Mobile design" onerror="this.style.opacity='0'" />
+        <!-- CSS abstract blob art -->
+        <div class="cta-blob cta-blob-1"></div>
+        <div class="cta-blob cta-blob-2"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FOOTER ───────────────────────────────────────────────── -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <a class="footer-logo" href="#">
+          <div class="logo-mark logo-mark-sm">
+            <svg width="10" height="10" viewBox="0 0 14 14" fill="none">
+              <rect x="1" y="1" width="5" height="5" rx="1" fill="white" opacity=".8"/>
+              <rect x="8" y="1" width="5" height="5" rx="1" fill="white" opacity=".5"/>
+              <rect x="1" y="8" width="5" height="5" rx="1" fill="white" opacity=".5"/>
+              <rect x="8" y="8" width="5" height="5" rx="1" fill="white" opacity=".3"/>
+            </svg>
+          </div>
+          <span>iota</span>
         </a>
+        <p class="footer-tagline">Mobile UI/UX design,<br />entirely in your browser.</p>
+        <p class="footer-copy">© 2026 iota. Made with care for designers.</p>
+      </div>
+
+      <div class="footer-links-group">
+        <div class="footer-col">
+          <div class="footer-col-title">Product</div>
+          <a href="#product">Editor</a>
+          <a href="#how">How it works</a>
+          <a href="#pricing">Pricing</a>
+          <a href="editor.html" onclick="localStorage.setItem('canvas_visited','1')">Open editor</a>
+        </div>
+        <div class="footer-col">
+          <div class="footer-col-title">Learn</div>
+          <a href="#">Documentation</a>
+          <a href="#">Tutorials</a>
+          <a href="#">Changelog</a>
+        </div>
+        <div class="footer-col">
+          <div class="footer-col-title">Legal</div>
+          <a href="#">Privacy</a>
+          <a href="#">Terms</a>
+          <a href="#">Cookies</a>
+        </div>
+      </div>
     </div>
-    <img style="position: absolute; height:70px; width:100px;" src="/output-onlinegiftools.gif" alt="" />
-</section>
-<br />
- <div style="font-family: 'Instrument Serif', serif; font-style: italic; text-align: center; font-weight: 300; font-size: 32px; "> <span>Be Creative</span> </div> 
-<!--<div class="carousel">
-    <div class="carousel-inner">
-        
-        <div class="carousel-slide testimonial slide-purple">
-            <img src="https://images.unsplash.com/photo-1502685104226-ee32379fefbe?auto=format&fit=crop&w=300&q=80" class="avatar" alt="Samuel">
-            <p class="quote">I designed my first full mobile app UI on my phone. iota feels unreal.</p>
-            <span class="author">— Samuel, Product Designer</span>
-        </div>
-        
-        <div class="carousel-slide testimonial slide-blue">
-            <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=300&q=80" class="avatar" alt="Aisha">
-            <p class="quote">No laptop, no installs. Just ideas turning into screens.</p>
-            <span class="author">— Aisha, Startup Founder</span>
-        </div>
-        
-        <div class="carousel-slide testimonial slide-green">
-            <img src="https://images.unsplash.com/photo-1527980965255-d3b416303d12?auto=format&fit=crop&w=300&q=80" class="avatar" alt="Daniel">
-            <p class="quote">The touch editor feels native. Like it was made for mobile first.</p>
-            <span class="author">— Daniel, UX Researcher</span>
-        </div>
-        
-        <div class="carousel-slide testimonial slide-orange">
-            <img src="https://images.unsplash.com/photo-1547425260-76bcadfb4f2c?auto=format&fit=crop&w=300&q=80" class="avatar" alt="Clara">
-            <p class="quote">I preview designs on real screen sizes instantly. That sold me.</p>
-            <span class="author">— Clara, UI Freelancer</span>
-        </div>
-        
-        <div class="carousel-slide testimonial slide-pink">
-            <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=300&q=80" class="avatar" alt="Leo">
-            <p class="quote">Collaborating in real-time from different phones just works.</p>
-            <span class="author">— Leo, Remote Team Lead</span>
-        </div>
-        
-        <div class="carousel-slide testimonial slide-teal">
-            <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=300&q=80" class="avatar" alt="Mercy">
-            <p class="quote">Even on slow internet, iota stays smooth.</p>
-            <span class="author">— Mercy, Student Designer</span>
-        </div>
-        
-        <div class="carousel-slide testimonial slide-indigo">
-            <img src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?auto=format&fit=crop&w=300&q=80" class="avatar" alt="Kevin">
-            <p class="quote"> to start. Powerful enough to stay.</p>
-            <span class="author">— Kevin, Indie Maker</span>
-        </div>
-        
-        <div class="carousel-slide testimonial slide-rose">
-            <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=300&q=80" class="avatar" alt="Zainab">
-            <p class="quote">This is what modern design tools should feel like.</p>
-            <span class="author">— Zainab, Visual Designer</span>
-        </div>
-        
-    </div>
+  </footer>
 
-    <div class="carousel-indicators">
-        <span class="indicator active" onclick="goToSlide(0)" aria-label="Slide 1"></span>
-        <span class="indicator" onclick="goToSlide(1)" aria-label="Slide 2"></span>
-        <span class="indicator" onclick="goToSlide(2)" aria-label="Slide 3"></span>
-        <span class="indicator" onclick="goToSlide(3)" aria-label="Slide 4"></span>
-        <span class="indicator" onclick="goToSlide(4)" aria-label="Slide 5"></span>
-        <span class="indicator" onclick="goToSlide(5)" aria-label="Slide 6"></span>
-        <span class="indicator" onclick="goToSlide(6)" aria-label="Slide 7"></span>
-        <span class="indicator" onclick="goToSlide(7)" aria-label="Slide 8"></span>
-    </div>
-</div>-->
-    <img height="50px" width="70px" style="right: 0; position: absolute;" src="/file_0000000085f071f48f19e09c246f59b5.png" alt="" />
-<br>
-<br>
-
-<section class="workflow" id="product">
-    <h2>From idea to mobile UI — all inside your browser</h2>
-                    <div class="timeline">
-                        <div class="timeline-item">
-                            <div class="timeline-marker"></div>
-                            <div class="timeline-content">
-                                <strong>Think</strong>
-                                <p>Start by outlining your app idea, defining what you want to build, and planning the flow of each screen.</p>
-                            </div>
-                        </div>
-                        <div class="timeline-item">
-                            <div class="timeline-marker"></div>
-                            <div class="timeline-content">
-                                <strong>Wireframe</strong>
-                                <p>Sketch the basic layout of every screen to structure content, buttons, and navigation before adding visual details.</p>
-                            </div>
-                        </div>
-                        <div class="timeline-item">
-                            <div class="timeline-marker"></div>
-                            <div class="timeline-content">
-                                <strong>Design</strong>
-                                <p>Add colors, typography, icons, and other visual elements to turn your wireframes into polished, cohesive screens.</p>
-                            </div>
-                        </div>
-                        <div class="timeline-item">
-                            <div class="timeline-marker"></div>
-                            <div class="timeline-content">
-                                <strong>Prototype</strong>
-                                <p>Link your screens together to create an interactive version of your app that behaves like the real product.</p>
-                            </div>
-                        </div>
-                    
-                                            <div class="timeline-item">
-                            <div class="timeline-marker"></div>
-                            <div class="timeline-content">
-                                <strong>Test</strong>
-                                <p>Run usability checks with your prototype to identify issues, gather feedback, and refine the user experience.</p>
-                            </div>
-                        </div>
-                    
-                                                <div class="timeline-item">
-                            <div class="timeline-marker"></div>
-                            <div class="timeline-content">
-                                <strong>Share</strong>
-                                <p>Export your design or share it with teammates and clients for collaboration, review, or handoff to developers.</p>
-                            </div>
-                        </div>
-                        </div>
-                    
-</section>
-
-
-
-<section class="how-it-works">
-    <div class="flex-row">
- <h2>?</h2>             <h2>See how this stuff works</h2>
-    </div>
-
-    <div class="steps-grid">
-        <div class="step-card">
-            <div class="step-number">1</div>
-
-
-            <h3 class="instrument">Open in browser</h3>
-            <p>No sign-up required. Just click and start designing.</p>
-
-        </div>
-        <div class="step-card">
-            <div class="step-number">2</div>
-
-            <h3 class="instrument">Choose device size</h3>
-            <p>Pick from popular mobile screen sizes or create custom.</p>
-        </div>
-        <div class="step-card">
-            <div class="step-number">3</div>
-
-            <h3 class="instrument">Design your UI</h3>
-            <p>Drag, drop, and customize components easily.</p>
-        </div>
-        <div class="step-card">
-            <div class="step-number">4</div>
-
-            <h3 class="instrument">Share or export</h3>
-            <p>Get a link or download your designs instantly.</p>
-        </div>
-    </div>
-</section>
-
-<div class="daddyCarousel">
-    <div class="presentation-container">
-
-  <div class="slide-counter">
-    <span id="currentSlide">1</span> / <span id="totalSlides">10</span>
-  </div>
-
-  <div class="carousel-window">
-    <div class="carousel-track" id="carouselTrack">
-
-      <div class="slide slide-1"  data-slide="1">  <div class="slide-bg"></div><h1 class="slide-title">Websites</h1>    </div>
-      <div class="slide slide-2"  data-slide="2">  <div class="slide-bg"></div><h1 class="slide-title">Mobile Apps</h1> </div>
-      <div class="slide slide-3"  data-slide="3">  <div class="slide-bg"></div><h1 class="slide-title">Branding</h1>    </div>
-      <div class="slide slide-4"  data-slide="4">  <div class="slide-bg"></div><h1 class="slide-title">UI/UX Design</h1></div>
-      <div class="slide slide-5"  data-slide="5">  <div class="slide-bg"></div><h1 class="slide-title">Development</h1> </div>
-      <div class="slide slide-6"  data-slide="6">  <div class="slide-bg"></div><h1 class="slide-title">Marketing</h1>   </div>
-      <div class="slide slide-7"  data-slide="7">  <div class="slide-bg"></div><h1 class="slide-title">Consulting</h1>  </div>
-      <div class="slide slide-8"  data-slide="8">  <div class="slide-bg"></div><h1 class="slide-title">Analytics</h1>   </div>
-      <div class="slide slide-9"  data-slide="9">  <div class="slide-bg"></div><h1 class="slide-title">Support</h1>     </div>
-      <div class="slide slide-10" data-slide="10"> <div class="slide-bg"></div><h1 class="slide-title">Contact Us</h1>  </div>
-
-    </div>
-  </div>
-
-  <div class="navigation">
-      
-    <button class="nav-btn" id="prevBtn">
-      <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
-    </button>
-    <button class="nav-btn" id="nextBtn">
-        
-      <svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
-    </button>
-  </div>
-
-</div>
-
-</div>
-
-
-<section class="cta-section">
-    <div class="cta-content">
-        <h2>Ready to design your mobile app?</h2>
-        <br />
-        <p>Join thousands of <u>designers</u>  creating beautiful <u>mobile UIs</u> every day.</p>
-        <div class="cta-buttons">
-            <a style="color:ghostwhite; background-color: #6366f1;" href="/editor" onclick="localStorage.setItem('canvas_visited', '1')" class="btn-primary btn-large">
-                <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
-                Start designing now
-            </a>
-            <a href="#" class="btn-secondary btn-large">
-                <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path></svg>
-                Read the docs
-            </a>
-        </div>
-    </div>
-</section>
-
-</main>
-
-<footer>
-    <div class="footer-bottom">
-        <div class="footer-bottom-content">
-            <div class="footer-logo">
-                <svg class="logo-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
-                <span>iota</span>
-            </div>
-            <p>&copy; 2026 iota — Mobile UI/UX design tool. 
-            <p>            Made with <svg class="heart-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path></svg> for designers.</p>
-</p>
-            <div class="footer-links">
-                <a href="resources.html#legal"><svg class="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"></path></svg> Privacy</a>
-                <a href="resources.html#legal"><svg class="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" x2="8" y1="13" y2="13"></line><line x1="16" x2="8" y1="17" y2="17"></line><line x1="10" x2="8" y1="9" y2="9"></line></svg> Terms</a>
-                <a href="resources.html#legal"><svg class="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5"></path><path d="M8.5 8.5v.01"></path><path d="M16 15.5v.01"></path><path d="M12 12v.01"></path><path d="M11 17v.01"></path><path d="M7 14v.01"></path></svg> Cookies</a>
-                <a href="resources.html#legal"><svg class="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path><path d="M13.5 12a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"></path><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7Z"></path><line x1="2" x2="22" y1="2" y2="22"></line></svg> Do Not Sell My Info</a>
-            </div>
-        </div>
-    </div>
-</footer>
-
-
-<script src="main.js"></script>
+  <script src="main.js"></script>
 </body>
 </html>
