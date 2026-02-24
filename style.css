@@ -295,7 +295,7 @@ a { text-decoration: none; color: inherit; }
 .hero-illustration2{
   display: none;
   position: absolute;
-  right: 2.4em;
+  right: .4em;
   top: 7em;
   height: 150px;
   width: 150px;
