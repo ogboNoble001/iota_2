@@ -6,6 +6,16 @@
   <title>Iota — Design Editor</title>
       <link rel="icon" type="image/svg+xml" href="favicon.svg" />
   <link rel="stylesheet" href="editor.css" />
+  <style>
+  @font-face { font-family: 'Playfair Display'; src: url('font/PlayfairDisplay-Regular.ttf') format('truetype'); font-weight: 400; }
+  @font-face { font-family: 'Playfair Display'; src: url('font/PlayfairDisplay-Bold.ttf') format('truetype'); font-weight: 700; }
+  @font-face { font-family: 'Bebas Neue'; src: url('font/BebasNeue-Regular.ttf') format('truetype'); font-weight: 400; }
+  @font-face { font-family: 'Lobster'; src: url('font/Lobster-Regular.ttf') format('truetype'); font-weight: 400; }
+  @font-face { font-family: 'Oswald'; src: url('font/Oswald-Regular.ttf') format('truetype'); font-weight: 400; }
+  @font-face { font-family: 'Oswald'; src: url('font/Oswald-Bold.ttf') format('truetype'); font-weight: 700; }
+  @font-face { font-family: 'Raleway'; src: url('font/Raleway-Regular.ttf') format('truetype'); font-weight: 400; }
+  @font-face { font-family: 'Raleway'; src: url('font/Raleway-Bold.ttf') format('truetype'); font-weight: 700; }
+</style>
 </head>
 <body>
 
@@ -469,6 +479,20 @@
                 </select>
               </div>
             </div>
+            <div class="prop-row full">
+  <div class="prop-field">
+    <div class="prop-label">Font Family</div>
+    <select class="prop-input" id="text-font"></select>
+  </div>
+</div>
+<div class="font-import-row">
+  <button class="btn-font-import" id="btn-import-font">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    Import Font
+  </button>
+  <span class="font-import-hint">TTF, OTF, WOFF, WOFF2</span>
+</div>
+<input type="file" id="font-file-input" accept=".ttf,.otf,.woff,.woff2" multiple />
           </div>
         </div>
 

@@ -18,6 +18,23 @@ let redoStack   = [];
 let showGrid    = true;
 let idCounter   = 1;
 
+
+// ── Font Registry ──────────────────────────────────────────────
+const BUILTIN_FONTS = [
+  'DM Sans',
+  'DM Mono',
+  'Georgia',
+  'Arial',
+  'Playfair Display',
+  'Bebas Neue',
+  'Lobster',
+  'Oswald',
+  'Raleway'
+];
+
+let importedFonts = []; // { name, url } added by user at runtime
+
+
 // ── Project Storage ────────────────────────────────────────────
 const STORAGE_KEY = 'canvas_projects';
 let   currentProjectId = null;
@@ -1391,6 +1408,98 @@ window.addEventListener('load', () => {
   }, 2200);
 });
 
+// ── Font Dropdown Builder ──────────────────────────────────────
+function buildFontDropdown() {
+  const select = document.getElementById('text-font');
+  if (!select) return;
+
+  select.innerHTML = '';
+
+  // Built-in group
+  const builtinGroup = document.createElement('optgroup');
+  builtinGroup.label = 'Built-in';
+  BUILTIN_FONTS.forEach(f => {
+    const opt   = document.createElement('option');
+    opt.value   = f;
+    opt.textContent = f;
+    opt.style.fontFamily = f;
+    builtinGroup.appendChild(opt);
+  });
+  select.appendChild(builtinGroup);
+
+  // Imported group
+  if (importedFonts.length) {
+    const importedGroup = document.createElement('optgroup');
+    importedGroup.label = 'Imported';
+    importedFonts.forEach(f => {
+      const opt   = document.createElement('option');
+      opt.value   = f.name;
+      opt.textContent = f.name;
+      opt.style.fontFamily = f.name;
+      importedGroup.appendChild(opt);
+    });
+    select.appendChild(importedGroup);
+  }
+
+  // Restore selected value
+  if (selected && selected.type === 'text') {
+    select.value = selected.fontFamily;
+  }
+}
+
+// ── Font Import ────────────────────────────────────────────────
+document.getElementById('btn-import-font').addEventListener('click', () => {
+  document.getElementById('font-file-input').click();
+});
+
+document.getElementById('font-file-input').addEventListener('change', e => {
+  const files = Array.from(e.target.files);
+  if (!files.length) return;
+
+  let loaded = 0;
+
+  files.forEach(file => {
+    const name = file.name
+      .replace(/\.(ttf|otf|woff|woff2)$/i, '')  // strip extension
+      .replace(/[-_]/g, ' ')                      // dashes/underscores → spaces
+      .replace(/([a-z])([A-Z])/g, '$1 $2')       // camelCase → spaces
+      .trim();
+
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const url      = ev.target.result;
+      const fontFace = new FontFace(name, `url(${url})`);
+
+      fontFace.load().then(loadedFace => {
+        document.fonts.add(loadedFace);
+
+        // Avoid duplicates
+        if (!importedFonts.find(f => f.name === name)) {
+          importedFonts.push({ name, url });
+        }
+
+        loaded++;
+        if (loaded === files.length) {
+          buildFontDropdown();
+          showToast(`${loaded} font${loaded > 1 ? 's' : ''} imported`);
+
+          // Auto-apply to selected text element
+          if (selected && selected.type === 'text') {
+            selected.fontFamily = name;
+            remeasureText(selected);
+            updatePanel();
+          }
+        }
+      }).catch(() => {
+        showToast(`Failed to load "${name}"`);
+      });
+    };
+    reader.readAsDataURL(file);
+  });
+
+  e.target.value = '';
+});
+
 // ── Init ───────────────────────────────────────────────────────
 function init() {
   // Starter elements
@@ -1411,6 +1520,7 @@ function init() {
   updatePanel();
   setTool('select');
   render();
+  buildFontDropdown()
 }
 // ═══════════════════════════════════════════════════════════════
 //  PROJECT SAVE / LOAD
@@ -1485,10 +1595,11 @@ function saveCurrentProject(name) {
     // Overwrite existing
     const idx = projects.findIndex(p => p.id === currentProjectId);
     if (idx !== -1) {
-      projects[idx].elements  = serial;
-      projects[idx].thumb     = thumb;
-      projects[idx].updatedAt = now.toISOString();
-      projects[idx].name      = name || projects[idx].name;
+      projects[idx].elements      = serial;
+projects[idx].importedFonts = importedFonts;
+projects[idx].thumb         = thumb;
+projects[idx].updatedAt     = now.toISOString();
+projects[idx].name          = name || projects[idx].name;
       saveProjects(projects);
       showToast(`"${projects[idx].name}" saved`);
       renderProjectsGrid();
@@ -1498,13 +1609,14 @@ function saveCurrentProject(name) {
 
   // New project
   const project = {
-    id:        Date.now().toString(),
-    name:      name || 'Untitled Project',
-    elements:  serial,
-    thumb,
-    createdAt: now.toISOString(),
-    updatedAt: now.toISOString()
-  };
+  id: Date.now().toString(),
+  name: name || 'Untitled Project',
+  elements: serial,
+  importedFonts: importedFonts,
+  thumb,
+  createdAt: now.toISOString(),
+  updatedAt: now.toISOString()
+};
 
   projects.unshift(project);
   saveProjects(projects);
@@ -1520,6 +1632,17 @@ function loadProject(id) {
 
   elements         = project.elements;
   ccurrentProjectId = project.id;
+  // Restore imported fonts
+if (project.importedFonts && project.importedFonts.length) {
+  importedFonts = project.importedFonts;
+  importedFonts.forEach(f => {
+    if (!document.fonts.check(`12px "${f.name}"`)) {
+      const fontFace = new FontFace(f.name, `url(${f.url})`);
+      fontFace.load().then(lf => document.fonts.add(lf));
+    }
+  });
+  buildFontDropdown();
+}
 selected = null;
 
 elements = project.elements.map(el => {

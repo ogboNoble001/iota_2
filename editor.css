@@ -1573,3 +1573,61 @@ input, select {
   .dialog-wide { max-width: 100%; }
   .projects-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
 }
+/* ── FONT PANEL ─────────────────────────────────── */
+.font-import-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+  margin-bottom: 6px;
+}
+
+.btn-font-import {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #6b6762;
+  background: #f5f4f2;
+  border: 1px solid #e2dfd9;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.btn-font-import:hover {
+  background: #eceae6;
+  color: #1a1917;
+  border-color: #ccc9c2;
+}
+
+.font-import-hint {
+  font-size: 10.5px;
+  color: #9e9b97;
+  font-family: 'DM Mono', monospace;
+}
+
+#font-file-input {
+  display: none;
+}
+
+/* Font option grouping in select */
+.prop-input optgroup {
+  font-size: 10px;
+  font-weight: 700;
+  color: #9e9b97;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: #f5f4f2;
+}
+
+.prop-input option {
+  font-size: 12px;
+  color: #1a1917;
+  background: #ffffff;
+  padding: 4px;
+}
