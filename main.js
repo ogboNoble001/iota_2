@@ -1,9 +1,6 @@
 // ═══════════════════════════════════════════════════════════════
 //  IOTA — Landing Page JavaScript
 // ═══════════════════════════════════════════════════════════════
-  if (localStorage.getItem('canvas_visited')) {
-    window.location.replace('/editor');
-  }
 document.addEventListener('DOMContentLoaded', () => {
 
   // ── Nav scroll effect ────────────────────────────────────────
