@@ -5,11 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>iota — Design Editor</title>
   <link rel="icon" type="image/svg+xml" href="/assets/img/svg/favicon.svg" />
-<script>
-  if (localStorage.getItem('canvas_visited')) {
-  window.location.replace('/editor');
-}
-</script>
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -77,7 +72,7 @@ class="hero-illustration2" />
         </p>
 
         <div class="hero-actions">
-          <a href="editor.html" onclick="localStorage.setItem('canvas_visited','1')" class="btn-primary">
+          <a href="editor.html" href="/editor" onclick="localStorage.setItem('canvas_visited','1')" class="btn-primary">
             Start designing free
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           </a>
@@ -597,7 +592,7 @@ class="hero-illustration2" />
           <a href="#product">Editor</a>
           <a href="#how">How it works</a>
           <a href="#pricing">Pricing</a>
-          <a href="editor.html" onclick="localStorage.setItem('canvas_visited','1')">Open editor</a>
+          <a href="editor.html" onclick="localStorage.setItem('canvas_visited','1')"> Open editor</a>
         </div>
         <div class="footer-col">
           <div class="footer-col-title">Learn</div>
