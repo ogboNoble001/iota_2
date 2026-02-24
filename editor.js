@@ -1,3 +1,6 @@
+if (!localStorage.getItem('canvas_visited')) {
+  window.location.replace('index.html');
+}
 // ═══════════════════════════════════════════════════════════════
 //  CANVAS DESIGN ENGINE — editor.js
 // ═══════════════════════════════════════════════════════════════
