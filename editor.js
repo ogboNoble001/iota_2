@@ -39,7 +39,7 @@ let importedFonts = []; // { name, url } added by user at runtime
 
 
 // ── Project Storage ────────────────────────────────────────────
-const STORAGE_KEY = 'canvas_projects';
+
 let   currentProjectId = null;
 
 // Drawing
@@ -1528,8 +1528,8 @@ document.getElementById('font-file-input').addEventListener('change', e => {
 
         // Avoid duplicates
         if (!importedFonts.find(f => f.name === name)) {
-          importedFonts.push({ name, url });
-        }
+  importedFonts.push({ name, url });
+}
 
         loaded++;
         if (loaded === files.length) {
@@ -1555,7 +1555,9 @@ document.getElementById('font-file-input').addEventListener('change', e => {
 });
 
 // ── Init ───────────────────────────────────────────────────────
-function init() {
+async function init() {
+    await openDB();
+    await migrateFromLocalStorage();
   // Starter elements
   const r = createElement('rect', 60, 60, 160, 100);
   r.radius = 12;
@@ -1585,14 +1587,9 @@ function init() {
 // ═══════════════════════════════════════════════════════════════
 
 function getAllProjects() {
-  try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-  } catch { return []; }
+  return dbGetAllProjects();
 }
 
-function saveProjects(projects) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
-}
 
 function generateThumb(projectElements) {
   const tmp  = document.createElement('canvas');
@@ -1634,101 +1631,149 @@ function generateThumb(projectElements) {
   return tmp.toDataURL();
 }
 
-function saveCurrentProject(name) {
-  const projects = getAllProjects();
-  const serial = elements.map(e => {
-  const c = { ...e };
-  if (e._img && e._img.src) c._imgSrc = e._img.src;
-  delete c._img;
-  return c;
-});
-  const thumb    = generateThumb(serial);
-  const now      = new Date();
-
-  if (currentProjectId) {
-    // Overwrite existing
-    const idx = projects.findIndex(p => p.id === currentProjectId);
-    if (idx !== -1) {
-      projects[idx].elements      = serial;
-projects[idx].importedFonts = importedFonts;
-projects[idx].thumb         = thumb;
-projects[idx].updatedAt     = now.toISOString();
-projects[idx].name          = name || projects[idx].name;
-      saveProjects(projects);
-      showToast(`"${projects[idx].name}" saved`);
-      renderProjectsGrid();
-      return;
+async function saveCurrentProject(name) {
+  const now = new Date().toISOString();
+  const isNew = !currentProjectId;
+  const id = currentProjectId || Date.now().toString();
+  currentProjectId = id;
+  
+  // Handle assets — save images as blobs
+  const elementsCopy = [];
+  for (const el of elements) {
+    const copy = { ...el };
+    delete copy._img;
+    
+    if (el.type === 'image' && el._img) {
+      // Reuse existing asset ID or create new one
+      if (!copy._assetId) {
+        copy._assetId = 'asset_' + el.id + '_' + Date.now();
+      }
+      // Convert image src to blob and save
+      const blob = await fetch(el._img.src).then(r => r.blob()).catch(() => null);
+      if (blob) {
+        await dbSaveAsset({
+          id: copy._assetId,
+          projectId: id,
+          type: 'image',
+          blob,
+          name: 'image_' + el.id,
+          mimeType: blob.type || 'image/png'
+        });
+      }
+    }
+    elementsCopy.push(copy);
+  }
+  
+  // Handle imported fonts
+  const fontAssets = [];
+  for (const f of importedFonts) {
+    if (f.assetId) {
+      fontAssets.push({ name: f.name, assetId: f.assetId });
+    } else if (f.url) {
+      const assetId = 'font_' + Date.now() + '_' + Math.random().toString(36).slice(2);
+      const blob = base64ToBlob(f.url);
+      await dbSaveAsset({
+        id: assetId,
+        projectId: id,
+        type: 'font',
+        blob,
+        name: f.name,
+        mimeType: 'font/ttf'
+      });
+      f.assetId = assetId;
+      fontAssets.push({ name: f.name, assetId });
     }
   }
-
-  // New project
+  
+  // Generate and save thumbnail as blob
+  const serial = elementsCopy;
+  const thumbDataUrl = generateThumb(serial);
+  const thumbBlob = base64ToBlob(thumbDataUrl);
+  await dbSaveThumbnail(id, thumbBlob);
+  
+  // Save project record
+  const existing = await dbLoadProject(id);
   const project = {
-  id: Date.now().toString(),
-  name: name || 'Untitled Project',
-  elements: serial,
-  importedFonts: importedFonts,
-  thumb,
-  createdAt: now.toISOString(),
-  updatedAt: now.toISOString()
-};
-
-  projects.unshift(project);
-  saveProjects(projects);
-  currentProjectId = project.id;
+    id,
+    name: name || existing?.name || 'Untitled Project',
+    elements: elementsCopy,
+    fontAssets,
+    createdAt: existing?.createdAt || now,
+    updatedAt: now
+  };
+  
+  await dbSaveProject(project);
   showToast(`"${project.name}" saved`);
   renderProjectsGrid();
 }
 
-function loadProject(id) {
-  const projects = getAllProjects();
-  const project  = projects.find(p => p.id === id);
+async function loadProject(id) {
+  const project = await dbLoadProject(id);
   if (!project) return;
-
-  elements         = project.elements;
-  ccurrentProjectId = project.id;
-  // Restore imported fonts
-if (project.importedFonts && project.importedFonts.length) {
-  importedFonts = project.importedFonts;
-  importedFonts.forEach(f => {
-    if (!document.fonts.check(`12px "${f.name}"`)) {
-      const fontFace = new FontFace(f.name, `url(${f.url})`);
-      fontFace.load().then(lf => document.fonts.add(lf));
-    }
-  });
   
-}
-selected = null;
-
-elements = project.elements.map(el => {
-  if (el.type === 'image' && el._imgSrc) {
-    const img = new Image();
-    img.src = el._imgSrc;
-    el._img = img;
+  currentProjectId = project.id;
+  selected = null;
+  importedFonts = [];
+  
+  // Restore images from asset store
+  const restoredElements = [];
+  for (const el of project.elements) {
+    const copy = { ...el };
+    if (el.type === 'image' && el._assetId) {
+      const asset = await dbGetAsset(el._assetId);
+      if (asset && asset.blob) {
+        try {
+          copy._img = await blobToImage(asset.blob);
+        } catch {
+          copy._imgBroken = true;
+        }
+      }
+    }
+    restoredElements.push(copy);
   }
-  return el;
-});
-
+  elements = restoredElements;
+  
+  // Restore fonts from asset store
+  if (project.fontAssets && project.fontAssets.length) {
+    for (const fa of project.fontAssets) {
+      const asset = await dbGetAsset(fa.assetId);
+      if (asset && asset.blob) {
+        try {
+          const url = blobToObjectURL(asset.blob);
+          const fontFace = new FontFace(fa.name, `url(${url})`);
+          const loaded = await fontFace.load();
+          document.fonts.add(loaded);
+          importedFonts.push({ name: fa.name, assetId: fa.assetId, url });
+        } catch {
+          console.warn(`Could not restore font: ${fa.name}`);
+        }
+      }
+    }
+    buildFontPickerList();
+  }
+  
   updatePanel();
   fitAll();
   document.getElementById('projects-dialog').classList.add('hidden');
   showToast(`"${project.name}" loaded`);
 }
 
-function deleteProject(id) {
-  let projects = getAllProjects();
-  const proj   = projects.find(p => p.id === id);
-  projects     = projects.filter(p => p.id !== id);
-  saveProjects(projects);
+async function deleteProject(id) {
+  const project = await dbLoadProject(id);
+  await dbDeleteProject(id);
   if (currentProjectId === id) currentProjectId = null;
-  showToast(`"${proj?.name || 'Project'}" deleted`);
+  showToast(`"${project?.name || 'Project'}" deleted`);
   renderProjectsGrid();
 }
 
 
-function renderProjectsGrid() {
-  const grid    = document.getElementById('projects-grid');
-  const search  = document.getElementById('projects-search').value.toLowerCase();
-  let projects  = getAllProjects();
+async function renderProjectsGrid() {
+  const grid   = document.getElementById('projects-grid');
+  const search = document.getElementById('projects-search').value.toLowerCase();
+
+  grid.innerHTML = `<div style="padding:20px;text-align:center;color:#9e9b97;font-size:12px;">Loading…</div>`;
+
+  let projects = await getAllProjects();
 
   if (search) {
     projects = projects.filter(p => p.name.toLowerCase().includes(search));
@@ -1744,24 +1789,25 @@ function renderProjectsGrid() {
     return;
   }
 
-  if (!projects.length) {
-    grid.innerHTML = '';
-    grid.appendChild(empty);
-    empty.style.display = '';
-    return;
-  }
-
-  
-
-  grid.innerHTML = projects.map(p => {
-    const date    = new Date(p.updatedAt);
-    const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-    const count   = p.elements?.length || 0;
-    const active  = p.id === currentProjectId ? 'style="border-color:#2563eb;"' : '';
+  // Build cards — load thumbnails from IndexedDB
+  const cards = await Promise.all(projects.map(async p => {
+    const thumb    = await dbGetThumbnail(p.id);
+    const thumbUrl = thumb?.blob
+      ? blobToObjectURL(thumb.blob)
+      : null;
+    const date     = new Date(p.updatedAt);
+    const dateStr  = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    const count    = p.elements?.length || 0;
+    const active   = p.id === currentProjectId ? 'style="border-color:#2563eb;"' : '';
 
     return `
       <div class="project-card" data-id="${p.id}" ${active}>
-        <img class="project-thumb" src="${p.thumb}" alt="${p.name}" />
+        ${thumbUrl
+          ? `<img class="project-thumb" src="${thumbUrl}" alt="${p.name}" />`
+          : `<div class="project-thumb" style="background:#f0eeeb;display:flex;align-items:center;justify-content:center;">
+               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ccc9c2" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+             </div>`
+        }
         <div class="project-info">
           <div class="project-name" title="${p.name}">${p.name}</div>
           <div class="project-date">${dateStr}</div>
@@ -1777,9 +1823,10 @@ function renderProjectsGrid() {
         </div>
       </div>
     `;
-  }).join('');
+  }));
 
-  // Events
+  grid.innerHTML = cards.join('');
+
   grid.querySelectorAll('.project-card').forEach(card => {
     card.addEventListener('dblclick', () => loadProject(card.dataset.id));
   });
@@ -1795,6 +1842,7 @@ function renderProjectsGrid() {
     });
   });
 }
+
 
 // ── Toast ──────────────────────────────────────────────────────
 let toastTimer = null;
@@ -1824,14 +1872,14 @@ document.getElementById('projects-dialog').addEventListener('pointerdown', e => 
 document.getElementById('projects-search').addEventListener('input', renderProjectsGrid);
 
 // Save Current button inside dialog
-document.getElementById('btn-save-project').addEventListener('click', () => {
+document.getElementById('btn-save-project').addEventListener('click', async () => {
   document.getElementById('projects-dialog').classList.add('hidden');
-  openSaveNameDialog();
+  await openSaveNameDialog();
 });
 
 // Save Name Dialog
-function openSaveNameDialog() {
-  const projects = getAllProjects();
+async function openSaveNameDialog() {
+  const projects = await getAllProjects();
   const existing = currentProjectId ? projects.find(p => p.id === currentProjectId) : null;
   const input    = document.getElementById('savename-input');
   input.value    = existing ? existing.name : '';
@@ -1859,15 +1907,15 @@ document.getElementById('savename-input').addEventListener('keydown', e => {
 document.addEventListener('keydown', e => {
   if ((e.ctrlKey || e.metaKey) && e.key === 's') {
     e.preventDefault();
-    const projects = getAllProjects();
-    const existing = projects.find(p => p.id === currentProjectId);
-    if (existing) {
-      // Quick-save over existing
-      saveCurrentProject(existing.name);
-    } else {
-      // First time — ask for name
-      openSaveNameDialog();
-    }
+    (async () => {
+      const projects = await getAllProjects();
+      const existing = projects.find(p => p.id === currentProjectId);
+      if (existing) {
+        saveCurrentProject(existing.name);
+      } else {
+        openSaveNameDialog();
+      }
+    })();
   }
 });
 init();
