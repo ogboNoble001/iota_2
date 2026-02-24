@@ -469,15 +469,13 @@
                   <option value="right">Right</option>
                 </select>
               </div>
-              <div class="prop-field">
-                <div class="prop-label">Font</div>
-                <select class="prop-input" id="text-font">
-                  <option value="DM Sans">DM Sans</option>
-                  <option value="Georgia">Georgia</option>
-                  <option value="DM Mono">DM Mono</option>
-                  <option value="Arial">Arial</option>
-                </select>
-              </div>
+<div class="prop-field">
+  <div class="prop-label">Font</div>
+  <button class="font-picker-trigger" id="font-picker-trigger">
+    <span id="font-trigger-preview">DM Sans</span>
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+  </button>
+</div>
             </div>
             <div class="prop-row full">
   <div class="prop-field">
@@ -617,6 +615,35 @@
   </div>
 </div>
 <div id="toast"></div>
-  <script src="editor.js"></script>
+<!-- Font Picker Modal -->
+<div id="font-picker-dialog" class="dialog-backdrop hidden">
+  <div class="dialog dialog-font">
+    <div class="dialog-header">
+      <span class="dialog-title">Choose Font</span>
+      <button class="dialog-close" id="font-picker-close">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="dialog-body font-picker-body">
+      <div class="font-picker-top">
+        <input class="projects-search" id="font-search" type="text" placeholder="Search fonts…" />
+        <button class="btn-font-import" id="btn-import-font2">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Import
+        </button>
+      </div>
+      <div class="font-picker-group-label">Built-in</div>
+      <div class="font-picker-list" id="font-picker-builtin"></div>
+      <div class="font-picker-group-label" id="font-picker-imported-label" style="display:none">Imported</div>
+      <div class="font-picker-list" id="font-picker-imported"></div>
+    </div>
+    <div class="dialog-footer">
+      <button class="btn-ghost" id="font-picker-cancel">Cancel</button>
+      <button class="btn-primary" id="font-picker-confirm">Apply</button>
+    </div>
+  </div>
+</div>
+
+<script src="editor.js"></script>
 </body>
 </html>
