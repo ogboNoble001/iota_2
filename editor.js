@@ -1321,7 +1321,11 @@ aspectRatio = el.w / el.h;
       document.getElementById('text-size').value    = el.fontSize;
       document.getElementById('text-weight').value  = el.fontWeight;
       document.getElementById('text-align').value   = el.textAlign;
-      document.getElementById('text-font').value    = el.fontFamily;
+      const triggerPreview = document.getElementById('font-trigger-preview');
+if (triggerPreview && el.type === 'text') {
+  triggerPreview.textContent = el.fontFamily || 'DM Sans';
+  triggerPreview.style.fontFamily = `'${el.fontFamily || 'DM Sans'}'`;
+}
     }
 
     document.getElementById('status-selected').textContent = `${el.type} #${el.id}`;
@@ -1412,43 +1416,89 @@ window.addEventListener('load', () => {
 });
 
 // ── Font Dropdown Builder ──────────────────────────────────────
-function buildFontDropdown() {
-  const select = document.getElementById('text-font');
-  if (!select) return;
+// ── Font Picker ────────────────────────────────────────────────
+let fontPickerSelected = null;
 
-  select.innerHTML = '';
-
-  // Built-in group
-  const builtinGroup = document.createElement('optgroup');
-  builtinGroup.label = 'Built-in';
-  BUILTIN_FONTS.forEach(f => {
-    const opt   = document.createElement('option');
-    opt.value   = f;
-    opt.textContent = f;
-    opt.style.fontFamily = f;
-    builtinGroup.appendChild(opt);
-  });
-  select.appendChild(builtinGroup);
-
-  // Imported group
-  if (importedFonts.length) {
-    const importedGroup = document.createElement('optgroup');
-    importedGroup.label = 'Imported';
-    importedFonts.forEach(f => {
-      const opt   = document.createElement('option');
-      opt.value   = f.name;
-      opt.textContent = f.name;
-      opt.style.fontFamily = f.name;
-      importedGroup.appendChild(opt);
+function buildFontPickerList() {
+  const search = (document.getElementById('font-search')?.value || '').toLowerCase();
+  const builtinEl = document.getElementById('font-picker-builtin');
+  const importedEl = document.getElementById('font-picker-imported');
+  const importedLabel = document.getElementById('font-picker-imported-label');
+  
+  const currentFont = selected?.fontFamily || 'DM Sans';
+  
+  function makeItem(fontName) {
+    if (search && !fontName.toLowerCase().includes(search)) return '';
+    const isActive = fontName === fontPickerSelected;
+    return `
+      <div class="font-picker-item ${isActive ? 'active' : ''}" data-font="${fontName}">
+        <span class="font-picker-sample" style="font-family:'${fontName}'">${fontName}</span>
+        <span class="font-picker-name">${fontName}</span>
+        <svg class="font-picker-check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+    `;
+  }
+  
+  builtinEl.innerHTML = BUILTIN_FONTS.map(makeItem).join('');
+  importedEl.innerHTML = importedFonts.map(f => makeItem(f.name)).join('');
+  importedLabel.style.display = importedFonts.length ? '' : 'none';
+  
+  // Click events
+  document.querySelectorAll('.font-picker-item').forEach(item => {
+    item.addEventListener('click', () => {
+      fontPickerSelected = item.dataset.font;
+      // Update trigger preview live
+      const preview = document.getElementById('font-trigger-preview');
+      if (preview) {
+        preview.textContent = fontPickerSelected;
+        preview.style.fontFamily = `'${fontPickerSelected}'`;
+      }
+      buildFontPickerList();
     });
-    select.appendChild(importedGroup);
-  }
-
-  // Restore selected value
-  if (selected && selected.type === 'text') {
-    select.value = selected.fontFamily;
-  }
+  });
 }
+
+function openFontPicker() {
+  fontPickerSelected = selected?.fontFamily || 'DM Sans';
+  document.getElementById('font-picker-dialog').classList.remove('hidden');
+  document.getElementById('font-search').value = '';
+  buildFontPickerList();
+  setTimeout(() => document.getElementById('font-search').focus(), 50);
+}
+
+// Trigger button
+document.getElementById('font-picker-trigger').addEventListener('click', openFontPicker);
+
+// Search
+document.getElementById('font-search').addEventListener('input', buildFontPickerList);
+
+// Close / Cancel
+document.getElementById('font-picker-close').addEventListener('click', () => {
+  document.getElementById('font-picker-dialog').classList.add('hidden');
+});
+document.getElementById('font-picker-cancel').addEventListener('click', () => {
+  document.getElementById('font-picker-dialog').classList.add('hidden');
+});
+
+// Backdrop click
+document.getElementById('font-picker-dialog').addEventListener('pointerdown', e => {
+  if (e.target === document.getElementById('font-picker-dialog'))
+    document.getElementById('font-picker-dialog').classList.add('hidden');
+});
+
+// Confirm
+document.getElementById('font-picker-confirm').addEventListener('click', () => {
+  if (!selected || selected.type !== 'text' || !fontPickerSelected) return;
+  selected.fontFamily = fontPickerSelected;
+  remeasureText(selected);
+  updatePanel();
+  document.getElementById('font-picker-dialog').classList.add('hidden');
+});
+
+// Import button inside picker
+document.getElementById('btn-import-font2').addEventListener('click', () => {
+  document.getElementById('font-file-input').click();
+});
 
 // ── Font Import ────────────────────────────────────────────────
 document.getElementById('btn-import-font').addEventListener('click', () => {
@@ -1483,7 +1533,8 @@ document.getElementById('font-file-input').addEventListener('change', e => {
 
         loaded++;
         if (loaded === files.length) {
-          buildFontDropdown();
+        //here  buildFontDropdown();
+        buildFontPickerList()
           showToast(`${loaded} font${loaded > 1 ? 's' : ''} imported`);
 
           // Auto-apply to selected text element
@@ -1523,7 +1574,7 @@ function init() {
   updatePanel();
   setTool('select');
   render();
-  buildFontDropdown()
+  
 }
 // ═══════════════════════════════════════════════════════════════
 //  PROJECT SAVE / LOAD
@@ -1644,7 +1695,7 @@ if (project.importedFonts && project.importedFonts.length) {
       fontFace.load().then(lf => document.fonts.add(lf));
     }
   });
-  buildFontDropdown();
+  
 }
 selected = null;
 
